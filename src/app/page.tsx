@@ -1,103 +1,1680 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
 
-export default function Home() {
+import React from "react";
+import { useState, useEffect } from "react";
+
+export default function HomePage() {
+  useEffect(() => {
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = document.querySelector(
+          this.getAttribute("href") as string,
+        );
+        target?.scrollIntoView({
+          behavior: "smooth",
+        });
+      });
+    });
+
+    // Navbar background on scroll
+    const handleScroll = () => {
+      const nav = document.querySelector("nav");
+      if (nav) {
+        if (window.scrollY > 100) {
+          nav.style.background = "rgba(255, 255, 255, 0.98)";
+        } else {
+          nav.style.background = "rgba(255, 255, 255, 0.95)";
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Add intersection observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
+    };
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement;
+          target.style.opacity = "1";
+          target.style.transform = "translateY(0)";
+        }
+      });
+    }, observerOptions);
+
+    // Observe all service cards and testimonial cards
+    document
+      .querySelectorAll(".service-card, .testimonial-card, .stat-item")
+      .forEach((el) => {
+        const element = el as HTMLElement;
+        element.style.opacity = "0";
+        element.style.transform = "translateY(20px)";
+        element.style.transition = "all 0.6s ease";
+        observer.observe(element);
+      });
+
+    // Form submission
+    const form = document.querySelector(
+      ".contact-form form",
+    ) as HTMLFormElement;
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        alert("Thank you for your message! We'll get back to you soon.");
+        this.reset();
+      });
+    }
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const [hasVideo, setHasVideo] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [modalReview, setModalReview] = useState<{title: string, content: string, reviewer: string} | null>(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  useEffect(() => {
+    const video = document.querySelector(".hero-video");
+    if (video) {
+      // Wait for video to be ready
+      video.addEventListener("loadeddata", () => {
+        video.addEventListener("error", () => {
+          setHasVideo(false);
+          document.querySelector(".hero")?.classList.remove("has-video");
+        });
+        // Fallback: show play button or continue without video
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check if device is mobile
+    const checkMobile = () => {
+      const mobile =
+        window.innerWidth <= 768 ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        );
+      setIsMobile(mobile);
+    };
+  }, []);
+
+  // Carousel functionality
+  const totalSlides = 5;
+
+  const currentSlide = (n: number) => {
+    setCurrentSlideIndex(n - 1);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlideIndex((prev) => (prev + 1) % totalSlides);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000); // Auto-scroll every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Update slide visibility and dots with sliding animation
+    const slides = document.querySelectorAll('.testimonial-slide');
+    const dots = document.querySelectorAll('.dot');
+
+    slides.forEach((slide, index) => {
+      slide.classList.remove('active', 'prev');
+
+      if (index === currentSlideIndex) {
+        slide.classList.add('active');
+      } else if (index < currentSlideIndex) {
+        slide.classList.add('prev');
+      }
+    });
+
+    dots.forEach((dot, index) => {
+      if (index === currentSlideIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }, [currentSlideIndex]);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div>
+      <style>{`
+        :root {
+          /* Pentagon Learning Brand Colors from Logo */
+          --brand-yellow: #F5C842;
+          --brand-light-blue: #4FC3D7;
+          --brand-dark-blue: #2E5984;
+          --brand-gray: #6B7A8A;
+          
+          /* Neutral Colors */
+          --dark-gray: #1F2937;
+          --medium-gray: #6B7280;
+          --light-gray: #F3F4F6;
+          --white: #FFFFFF;
+          
+          /* Pentagon Brand Gradients */
+          --gradient-primary: linear-gradient(135deg, var(--brand-light-blue) 0%, var(--brand-dark-blue) 100%);
+          --gradient-secondary: linear-gradient(135deg, var(--brand-light-blue) 0%, var(--brand-gray) 100%);
+          --gradient-accent: linear-gradient(135deg, var(--brand-yellow) 0%, var(--brand-gray) 100%);
+        }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--brand-yellow);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4);
+        }
+
+        /* Hero Section */
+/* Video Background */
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+}
+
+/* Hide floating cards when video is playing */
+.hero.has-video .floating-cards {
+    display: none;
+}
+
+/* Show alternative content when video is active */
+.hero.has-video .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    color: white;
+}
+
+.video-overlay-content {
+    display: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero.has-video .video-overlay-content {
+    display: block;
+}
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e1f5fe 50%, #fff9c4 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%234FC3D7" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--brand-dark-blue);
+            padding: 1rem 2rem;
+            border: 2px solid var(--brand-dark-blue);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--brand-dark-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slideInRight 1s ease-out;
+        }
+
+        .floating-cards {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 0;
+            left: 0;
+            width: 200px;
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 150px;
+            right: 0;
+            width: 180px;
+            animation-delay: -2s;
+            border: 2px solid var(--brand-light-blue);
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 0;
+            left: 50px;
+            width: 160px;
+            animation-delay: -4s;
+            border: 2px solid var(--brand-gray);
+        }
+
+        .purple-floating-card-text {
+            color: white;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Revamped Testimonials Section */
+        .testimonials-revamped {
+            background: var(--light-gray);
+            padding: 6rem 0;
+        }
+
+        .testimonials-revamped-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .testimonials-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .teacher-photo {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+
+        .teacher-photo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .teacher-photo img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--brand-yellow);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .teacher-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .teacher-info p {
+            color: var(--medium-gray);
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonials-carousel {
+            position: relative;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: 300px;
+        }
+
+        .testimonial-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .testimonial-slide:first-child {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .testimonial-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .testimonial-slide.prev {
+            transform: translateX(-100%);
+        }
+
+        .testimonial-slide .review-stars {
+            color: var(--brand-yellow);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-slide p {
+            font-style: italic;
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-slide .reviewer {
+            font-weight: 600;
+            color: var(--brand-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--brand-yellow);
+            transform: scale(1.2);
+        }
+
+        .dot:hover {
+            background: var(--brand-light-blue);
+        }
+
+        .read-more-link {
+            color: var(--brand-dark-blue);
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .read-more-link:hover {
+            color: var(--brand-yellow);
+            text-decoration: none;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 1rem;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--light-gray);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--brand-yellow);
+        }
+
+        .modal-stars {
+            color: var(--brand-yellow);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-text {
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-reviewer {
+            font-weight: 600;
+            color: var(--brand-dark-blue);
+            text-align: right;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: white;
+            padding: 5rem 0;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            margin-top: 0.5rem;
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--light-gray);
+            padding: 6rem 0;
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(245, 200, 66, 0.1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--brand-yellow);
+        }
+
+        .service-card:nth-child(1) .service-icon {
+            background: var(--gradient-primary);
+        }
+
+        .service-card:nth-child(2) .service-icon {
+            background: var(--gradient-secondary);
+        }
+
+        .service-card:nth-child(3) .service-icon {
+            background: var(--gradient-accent);
+        }
+
+        .service-card:nth-child(4) .service-icon {
+            background: var(--gradient-primary);
+        }
+
+        .service-card:nth-child(5) .service-icon {
+            background: var(--gradient-secondary);
+        }
+
+        .service-card:nth-child(6) .service-icon {
+            background: var(--gradient-accent);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        .service-card p {
+            color: var(--medium-gray);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features {
+            list-style: none;
+        }
+
+        .service-features li {
+            color: var(--medium-gray);
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .service-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--brand-light-blue);
+            font-weight: bold;
+        }
+
+        /* Testimonials */
+.testimonials {
+    background: white;
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .testimonial-card {
+            background: var(--light-gray);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid var(--brand-yellow);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--brand-light-blue);
+            opacity: 0.3;
+        }
+
+        .testimonial-text {
+            color: var(--dark-gray);
+            margin-bottom: auto;
+            line-height: 1.6;
+            padding-bottom: 1.5rem;
+        }
+
+.testimonial-author {
+    display: flex;
+    align-items: centre;
+    gap: 1rem;
+}
+
+.author-avatar {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--brand-light-blue);
+    overflow: visible;
+}
+
+.school-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.student-initial {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.author-info h4 {
+    font-weight: 600;
+    color: var(--dark-gray);
+    margin-bottom: 0.25rem;
+}
+
+.author-info p {
+    color: var(--medium-gray);
+    font-size: 0.9rem;
+}
+
+        /* Contact Section */
+        .contact {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 6rem 0;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .contact-info h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .contact-details {
+            list-style: none;
+        }
+
+        .contact-details li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group select option {
+            color: var(--dark-gray);
+            background: white;
+        }
+
+        .submit-btn {
+            background: white;
+            color: var(--brand-dark-blue);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: var(--light-gray);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: white;
+            padding: 3rem 0 1rem;
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-container {
+                justify-content: space-between;
+            }
+
+            .cta-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .hero-video {
+                display: none; /* Hide video on mobile */
+            }
+
+            .hero.has-video .floating-cards {
+                display: block; /* Show cards on mobile even if video exists */
+            }
+
+            .hero.has-video .video-overlay-content {
+                display: none; /* Hide video overlay content on mobile */
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+
+            .floating-cards {
+                width: 300px;
+                height: 300px;
+            }
+
+            .floating-card {
+                width: 150px !important;
+            }
+
+            .testimonials-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .teacher-photo-wrapper {
+                align-items: center;
+            }
+
+            .teacher-photo img {
+                width: 200px;
+                height: 200px;
+            }
+
+            .testimonial-slide {
+                padding: 1.5rem 1rem;
+                height: auto;
+                min-height: 280px;
+            }
+
+            .testimonial-slide p {
+                font-size: 0.85rem;
+                line-height: 1.5;
+                margin-bottom: 1.5rem;
+                max-width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .testimonial-slide .review-stars {
+                font-size: 1.3rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .testimonial-slide .reviewer {
+                font-size: 0.85rem;
+                margin-bottom: 1rem;
+            }
+
+            .read-more-link {
+                font-size: 0.85rem;
+            }
+
+            .carousel-container {
+                height: 300px;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 375px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .service-card {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .hero-container {
+                padding: 0 1rem;
+            }
+
+            .testimonials-revamped-container {
+                padding: 0 1rem;
+            }
+        }
+      `}</style>
+
+      {/* Navigation */}
+      <nav>
+        <div className="nav-container">
+          <div className="logo">Pentamaths</div>
+          <ul className="nav-links">
+            <li>
+              <a href="#home">Home</a>
+            </li>
+            <li>
+              <a href="#services">Programmes</a>
+            </li>
+            <li>
+              <a href="#testimonials">Reviews</a>
+            </li>
+            <li>
+              <a href="#contact">Contact</a>
+            </li>
+          </ul>
+          <a href="#contact" className="cta-button">
+            Get Started
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </nav>
+
+      {/* Hero Section */}
+      <section id="home" className="hero">
+        {/* Video Background - only loads on desktop */}
+        {!isMobile && (
+          <>
+            <video
+              className="hero-video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster="/images/hero-fallback.png"
+            >
+              <source src="/videos/math-background.webm" type="video/webm" />
+              <source src="/videos/math-background.mp4" type="video/mp4" />
+            </video>
+            <div className="hero-overlay"></div>
+          </>
+        )}
+
+        <div className="hero-container">
+          <div className="hero-content">
+            <h1>Master Mathematics with Expert Guidance</h1>
+            <p>
+              Specializing in Upper Secondary A Maths and JC H2 Mathematics...
+            </p>
+            <div className="hero-buttons">
+              <a href="#contact" className="btn-primary">
+                Book a Trial Lesson
+              </a>
+              <a href="#services" className="btn-secondary">
+                View Programmes
+              </a>
+            </div>
+          </div>
+
+          <div className="hero-visual">
+            {/* Floating Cards - hidden when video plays */}
+            <div className="floating-cards">
+              <div className="floating-card">
+                <h3>Vectors</h3>
+                <p>Length of Projection</p>
+              </div>
+              <div className="floating-card">
+                <h3>AP/GP</h3>
+                <p>Sum to Infinity</p>
+              </div>
+              <div className="floating-card">
+                <h3>Functions</h3>
+                <p>Range of Composite Functions</p>
+              </div>
+            </div>
+
+            {/* Alternative content when video is active */}
+            <div className="video-overlay-content">
+              <h3>Excellence in Mathematics</h3>
+              <p>Join hundreds of successful students</p>
+              <div className="video-stats">
+                <span>300+ Students</span> • <span>75% A Rate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="testimonials-revamped">
+        <div className="testimonials-revamped-container">
+          <div className="section-header">
+            <h2>What Students & Parents Say</h2>
+            <p>Real stories from our mathematics community</p>
+          </div>
+
+          <div className="testimonials-content">
+            <div className="teacher-photo">
+              <div className="teacher-photo-wrapper">
+                <img src="/images/mrwu/thumbsup.png" alt="Mr Wu - Mathematics Tutor" />
+                <div className="teacher-info">
+                  <h3>Mr Wu</h3>
+                  <p>Mathematics Educator</p>
+                  <p>20+ Years Experience</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonials-carousel">
+              <div className="carousel-container">
+                <div className="testimonial-slide active">
+                  <div className="review-stars">★★★★★</div>
+                  <p>"I attended the <strong>sec 4 amath class</strong> and <strong>jumped from F9 to A1 for O levels</strong>. Mr Wu is really patient in guiding the class... <span
+                    className="read-more-link"
+                    onClick={() => setModalReview({
+                      title: "Amazing Grade Improvement",
+                      content: "I attended the sec 4 amath class last year and I jumped from a F9 for sec 3 eoy to an A1 for o levels. Mr Wu is really patient in guiding the class as well as in providing help for emath which I also scored an A1 for o levels.",
+                      reviewer: "C"
+                    })}
+                  >
+                    read more
+                  </span>"</p>
+                  <div className="reviewer">- C</div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <div className="review-stars">★★★★★</div>
+                  <p>"Both my daughters have been with Pentagon Learning, one doing <strong>A Math</strong> and another <strong>A' levels H2 Math</strong>. <strong>Mr Wu has the patience of a Saint</strong>... <span
+                    className="read-more-link"
+                    onClick={() => setModalReview({
+                      title: "Excellent for Both A Math & H2 Math",
+                      content: "Both my daughters have been with Pentagon Learning for a couple of years, one doing A Math and another just completed A' levels H2 Math. Mr Wu has the patience of a Saint. He believes that Mathematics is about understanding how concepts work instead of just memorizing a bunch of formulas. He ignites the curiosity of his students by encouraging them to ask many questions and shows them the Beauty of Mathematics. He comes up with creative ways to help his students understand different concepts, challenging them to try out different ways to solve questions. My daughters have become better and more confident as they tackled challenging questions.",
+                      reviewer: "ELQ"
+                    })}
+                  >
+                    read more
+                  </span>"</p>
+                  <div className="reviewer">- ELQ</div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <div className="review-stars">★★★★★</div>
+                  <p>"I was struggling with <strong>amaths and could barely do homework</strong>. <strong>Mr Wu simplifies complicated concepts with real-life examples</strong>. He will answer questions within minutes... <span
+                    className="read-more-link"
+                    onClick={() => setModalReview({
+                      title: "From Struggling to Success",
+                      content: "Hi! I am a 2022 secondary 4 student and joined the tuition in june. I was struggling with my amaths and could barely do any of my homework, and I decided to join the tuition center from reccomandation from my classmates. And I did not regret this decision one bit! Mr wu is a really good teacher. You can tell his enthusiasm for maths through his enthusiasm in lessons. He likes to simplify complicated math concepts by relating them to our real-life experinces, making it much easier to swallow down and understand During breaks, he will tell us about some fun math facts! Whenever I have a question, i can always drop him a message and he will answer me within a few minutes! In fact, he always encourages us to ask more questions! Before an exam, he will always ensure that we are well prepare. He will go through any topics that we may be more confused on, and goes through quite a few papers and makes sure we do sufficient practise! sometimes he also gave us advice on our past secondary choices and told us about what he did too! In the end, i jumped from a F9 grade to an a2 grade, so i think this really shows how good of a teacher he is!",
+                      reviewer: "Chong JX"
+                    })}
+                  >
+                    read more
+                  </span>"</p>
+                  <div className="reviewer">- Chong JX</div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <div className="review-stars">★★★★★</div>
+                  <p>"Mr Wu is a <strong>competent tutor who relates his teaching very well</strong> to my child. He is able to <strong>stimulate interests in math and motivate them to maximise their potential</strong>... <span
+                    className="read-more-link"
+                    onClick={() => setModalReview({
+                      title: "Competent & Motivating Tutor",
+                      content: "Mr Wu is a competent tutor who is able to relate his teaching very well to my child. He is able to stimulate the interests of his students in math and motivate them to maximise their potential in learning. His patience and joviality have won his students' hearts.",
+                      reviewer: "N Koh"
+                    })}
+                  >
+                    read more
+                  </span>"</p>
+                  <div className="reviewer">- N Koh</div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <div className="review-stars">★★★★★</div>
+                  <p>"<strong>A Truly Exceptional Math Teacher</strong> - I highly recommend Mr. Wu for anyone seeking to deepen their understanding of <strong>H2 Math</strong>. He has a <strong>remarkable ability to simplify complex concepts</strong>... <span
+                    className="read-more-link"
+                    onClick={() => setModalReview({
+                      title: "A Truly Exceptional H2 Math Teacher",
+                      content: "I highly recommend Mr. Wu at Pentagon Learning for anyone seeking to deepen their understanding of H2 Math. He is a truly exceptional educator who brings a unique and highly effective perspective to teaching. Mr. Wu has a remarkable ability to simplify complex concepts, making them accessible and intuitive. His innovative teaching methods not only helped me grasp challenging topics but also ignited a genuine interest in the subject. If you are looking for a teacher who can truly help you learn from the best and see math in a new light, Mr. Wu is the one to choose. The profound knowledge and insights you gain from his classes are an invaluable investment, far more rewarding than any temporary incentive. His dedication and approach make him an invaluable resource.",
+                      reviewer: "M Tang"
+                    })}
+                  >
+                    read more
+                  </span>"</p>
+                  <div className="reviewer">- M Tang</div>
+                </div>
+              </div>
+
+              <div className="carousel-dots">
+                <span className="dot active" onClick={() => currentSlide(1)}></span>
+                <span className="dot" onClick={() => currentSlide(2)}></span>
+                <span className="dot" onClick={() => currentSlide(3)}></span>
+                <span className="dot" onClick={() => currentSlide(4)}></span>
+                <span className="dot" onClick={() => currentSlide(5)}></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="stats">
+        <div className="stats-container">
+          <div className="stat-item">
+            <span className="stat-number">300+</span>
+            <div className="stat-label">Students Guided</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">75%</span>
+            <div className="stat-label">A1/A2/A Rate</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">20+</span>
+            <div className="stat-label">Years Experience</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">2</span>
+            <div className="stat-label">Average Grade Improvement</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="services">
+        <div className="services-container">
+          <div className="section-header">
+            <h2>Mathematics Programmes</h2>
+            <p>
+              Specialized tuition for Singapore's mathematics curriculum with
+              proven teaching methodologies
+            </p>
+          </div>
+          <div className="services-grid">
+            <div className="service-card">
+              <div className="service-icon">📐</div>
+              <h3>A Mathematics (Upper Sec)</h3>
+              <p>
+                Master Additional Mathematics for Sec 3 & 4 students. Build
+                strong foundations and excel in challenging concepts.
+              </p>
+              <ul className="service-features">
+                <li>Trigonometry & Coordinate Geometry</li>
+                <li>Calculus (Differentiation & Integration)</li>
+                <li>Exponential & Logarithmic Functions</li>
+                <li>Past Year Papers & Exam Techniques</li>
+              </ul>
+            </div>
+            <div className="service-card">
+              <div className="service-icon">📊</div>
+              <h3>H2 Mathematics (JC)</h3>
+              <p>
+                Comprehensive JC H2 Mathematics tuition covering the entire
+                A-Level syllabus with strategic exam preparation.
+              </p>
+              <ul className="service-features">
+                <li>Pure Mathematics (Functions, Calculus)</li>
+                <li>Statistics (Probability, Distributions)</li>
+                <li>A-Level Exam Strategies</li>
+              </ul>
+            </div>
+            <div className="service-card">
+              <div className="service-icon">👥</div>
+              <h3>Small Group Classes</h3>
+              <p>
+                Learn with peers in small groups of 3-6 students for interactive
+                learning and peer support.
+              </p>
+              <ul className="service-features">
+                <li>Max 6 students per class</li>
+                <li>Collaborative problem-solving</li>
+                <li>Cost-effective option</li>
+                <li>Scheduled weekly sessions</li>
+              </ul>
+            </div>
+            <div className="service-card">
+              <div className="service-icon">🎯</div>
+              <h3>One-on-One Tuition</h3>
+              <p>
+                Personalized attention with customized lesson plans tailored to
+                individual learning needs and pace.
+              </p>
+              <ul className="service-features">
+                <li>Personalized curriculum</li>
+                <li>Flexible scheduling</li>
+                <li>Intensive exam preparation</li>
+                <li>Immediate feedback & support</li>
+              </ul>
+            </div>
+            <div className="service-card">
+              <div className="service-icon">📝</div>
+              <h3>Exam Preparation</h3>
+              <p>
+                Intensive preparation for O-Level A Maths and A-Level H2
+                Mathematics with strategic exam techniques.
+              </p>
+              <ul className="service-features">
+                <li>Past year paper analysis</li>
+                <li>Exam techniques & time management</li>
+                <li>Mock examinations</li>
+                <li>Grade improvement strategies</li>
+              </ul>
+            </div>
+            <div className="service-card">
+              <div className="service-icon">📱</div>
+              <h3>Topical Revision</h3>
+              <p>
+                Intensive holiday courses to catch up, or revise key concepts
+                weekly on top of regular classes.
+              </p>
+              <ul className="service-features">
+                <li>June & December holidays</li>
+                <li>Intensive revision courses</li>
+                <li>Strengthen weak areas</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="testimonials">
+        <div className="testimonials-container">
+          <div className="section-header">
+            <h2>Student Success Stories</h2>
+            <p>
+              Real results from students who've achieved excellence in
+              mathematics
+            </p>
+          </div>
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-text">
+                hi mr wu, wanted to thank you for all the help with math!
+                managed to get an A for H1 math 😊 everything else was alright!
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  <img
+                    src="/images/schools/ri-logo.png"
+                    alt="Raffles Institution"
+                    className="school-logo"
+                  />
+                </div>
+                <div className="author-info">
+                  <h4>JX</h4>
+                  <p>RI</p>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-text">
+                HI MR WU I GOT 90RP THANK U!!!!! HOORAY
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  <img
+                    src="/images/schools/ejc-logo.png"
+                    alt="Eunoia Junior College"
+                    className="school-logo"
+                  />
+                </div>
+                <div className="author-info">
+                  <h4>Z</h4>
+                  <p>EJC</p>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-text">
+                Hi Mr Wu! I got A for Maths!! Thank you so much for all your
+                help and guidance!! 🙏🙏🫶🫶
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  <img
+                    src="/images/schools/sajc-logo.png"
+                    alt="Saint Andrew's Junior College"
+                    className="school-logo"
+                  />
+                </div>
+                <div className="author-info">
+                  <h4>V</h4>
+                  <p>SAJC</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="contact">
+        <div className="contact-container">
+          <div className="contact-info">
+            <h2>Ready to Excel in Mathematics?</h2>
+            <p>
+              Contact us today to schedule a trial lesson and discover how
+              Pentamaths can help you achieve your academic goals.
+            </p>
+            <ul className="contact-details">
+              <li>📧 ask@pentamaths.sg</li>
+              <li>📱 +65 8349 3435</li>
+              <li>📍 17 Simon Road, #02-01, Singapore</li>
+              <li>🌐 facebook.com/pentamathsfb</li>
+            </ul>
+          </div>
+          <div className="contact-form">
+            <form>
+              <div className="form-group">
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="Enter your email" required />
+              </div>
+              <div className="form-group">
+                <label>Subject Level</label>
+                <select>
+                  <option value="">Select your level</option>
+                  <option value="a-maths">A Mathematics (Sec 3-4)</option>
+                  <option value="h2-maths">H2 Mathematics (JC)</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Message</label>
+                <textarea
+                  rows={4}
+                  placeholder="Tell us about your current mathematics level and learning goals..."
+                ></textarea>
+              </div>
+              <button type="submit" className="submit-btn">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer>
+        <div>
+          <p>&copy; 2025 Pentagon Learning. All rights reserved.</p>
+        </div>
       </footer>
+
+      {/* Review Modal */}
+      {modalReview && (
+        <div className="modal-overlay" onClick={() => setModalReview(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalReview(null)}>
+              ×
+            </button>
+            <h3>{modalReview.title}</h3>
+            <div className="modal-stars">★★★★★</div>
+            <div className="modal-text">{modalReview.content}</div>
+            <div className="modal-reviewer">- {modalReview.reviewer}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
