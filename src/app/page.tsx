@@ -85,18 +85,38 @@ export default function HomePage() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
-    const video = document.querySelector(".hero-video");
-    if (video) {
-      // Wait for video to be ready
-      video.addEventListener("loadeddata", () => {
-        video.addEventListener("error", () => {
+    // Only try to set up video on desktop
+    if (!isMobile) {
+      const video = document.querySelector(".hero-video") as HTMLVideoElement;
+      const heroSection = document.querySelector(".hero");
+
+      if (video && heroSection) {
+        const handleVideoLoad = () => {
+          setHasVideo(true);
+          heroSection.classList.add("has-video");
+        };
+
+        const handleVideoError = () => {
           setHasVideo(false);
-          document.querySelector(".hero")?.classList.remove("has-video");
-        });
-        // Fallback: show play button or continue without video
-      });
+          heroSection.classList.remove("has-video");
+        };
+
+        // Check if video is already loaded
+        if (video.readyState >= 2) {
+          handleVideoLoad();
+        } else {
+          video.addEventListener("loadeddata", handleVideoLoad);
+        }
+
+        video.addEventListener("error", handleVideoError);
+
+        return () => {
+          video.removeEventListener("loadeddata", handleVideoLoad);
+          video.removeEventListener("error", handleVideoError);
+        };
+      }
     }
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     // Check if device is mobile
@@ -107,6 +127,13 @@ export default function HomePage() {
           navigator.userAgent,
         );
       setIsMobile(mobile);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
 
@@ -331,6 +358,7 @@ export default function HomePage() {
             background: linear-gradient(135deg, #f8fafc 0%, #e1f5fe 50%, #fff9c4 100%);
             position: relative;
             overflow: hidden;
+            padding-top: 80px;
         }
 
         .hero::before {
@@ -1119,6 +1147,10 @@ export default function HomePage() {
                 grid-template-columns: 1fr;
                 text-align: center;
                 gap: 2rem;
+            }
+
+            .hero {
+                padding-top: 100px;
             }
 
             .hero h1 {
