@@ -314,7 +314,7 @@ export default function HomePage() {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     z-index: 1;
 }
 
@@ -354,6 +354,12 @@ export default function HomePage() {
 
 .hero.has-video .video-overlay-content {
     display: block;
+}
+
+.video-overlay-content h3,
+.video-overlay-content p,
+.video-overlay-content span {
+    color: white !important;
 }
         .hero {
             min-height: 100vh;
@@ -414,6 +420,7 @@ export default function HomePage() {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            margin-top: 8rem;
         }
 
         .btn-primary {
@@ -1296,9 +1303,6 @@ export default function HomePage() {
         <div className="hero-container">
           <div className="hero-content">
             <h1>Master Mathematics with Expert Guidance</h1>
-            <p>
-              Specializing in Upper Secondary A Maths and JC H2 Mathematics...
-            </p>
             <div className="hero-buttons">
               <a href="#contact" className="btn-primary">
                 Book a Trial Lesson
