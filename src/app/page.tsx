@@ -8,14 +8,15 @@ export default function HomePage() {
   useEffect(() => {
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", function (e) {
+      anchor.addEventListener("click", (e) => {
         e.preventDefault();
-        const target = document.querySelector(
-          this.getAttribute("href") as string,
-        );
-        target?.scrollIntoView({
-          behavior: "smooth",
-        });
+        const href = (e.currentTarget as HTMLAnchorElement).getAttribute("href");
+        if (href) {
+          const target = document.querySelector(href);
+          target?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
       });
     });
 
