@@ -85,8 +85,8 @@ export default function HomePage() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
-    // Only try to set up video on desktop
-    if (!isMobile) {
+    // Set up video for all devices
+    // if (!isMobile) {
       const video = document.querySelector(".hero-video") as HTMLVideoElement;
       const heroSection = document.querySelector(".hero");
 
@@ -119,7 +119,7 @@ export default function HomePage() {
           video.removeEventListener("error", handleVideoError);
         };
       }
-    }
+    // }
   }, [isMobile]);
 
   useEffect(() => {
@@ -1282,8 +1282,8 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section id="home" className="hero">
-        {/* Video Background - only loads on desktop */}
-        {!isMobile && (
+        {/* Video Background - loads on all devices */}
+        {/* {!isMobile && ( */}
           <>
             <video
               className="hero-video"
@@ -1298,7 +1298,7 @@ export default function HomePage() {
             </video>
             <div className="hero-overlay"></div>
           </>
-        )}
+        {/* )} */}
 
         <div className="hero-container">
           <div className="hero-content">
