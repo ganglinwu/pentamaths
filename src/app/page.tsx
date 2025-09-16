@@ -94,6 +94,10 @@ export default function HomePage() {
         const handleVideoLoad = () => {
           setHasVideo(true);
           heroSection.classList.add("has-video");
+          // Ensure video plays
+          video.play().catch(() => {
+            console.log("Video autoplay failed");
+          });
         };
 
         const handleVideoError = () => {
@@ -311,7 +315,7 @@ export default function HomePage() {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -2;
+    z-index: 1;
 }
 
 .hero-overlay {
@@ -321,7 +325,7 @@ export default function HomePage() {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
-    z-index: -1;
+    z-index: 2;
 }
 
 /* Hide floating cards when video is playing */
@@ -381,7 +385,7 @@ export default function HomePage() {
             gap: 4rem;
             align-items: center;
             position: relative;
-            z-index: 1;
+            z-index: 3;
         }
 
         .hero-content {
