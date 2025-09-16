@@ -389,13 +389,15 @@ export default function HomePage() {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
-            align-items: center;
+            align-items: start;
             position: relative;
             z-index: 3;
         }
 
         .hero-content {
             animation: slideInLeft 1s ease-out;
+            align-self: flex-start;
+            padding-top: 2rem;
         }
 
         .hero h1 {
@@ -462,8 +464,9 @@ export default function HomePage() {
         .hero-visual {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             animation: slideInRight 1s ease-out;
+            padding-top: 2rem;
         }
 
         .floating-cards {
@@ -1142,16 +1145,13 @@ export default function HomePage() {
                 font-size: 0.85rem;
             }
 
-            .hero-video {
-                display: none; /* Hide video on mobile */
-            }
 
             .hero.has-video .floating-cards {
-                display: block; /* Show cards on mobile even if video exists */
+                display: none; /* Keep cards hidden on mobile when video exists */
             }
 
             .hero.has-video .video-overlay-content {
-                display: none; /* Hide video overlay content on mobile */
+                display: block; /* Keep video overlay content visible on mobile */
             }
 
             .hero-container {
@@ -1166,6 +1166,22 @@ export default function HomePage() {
 
             .hero h1 {
                 font-size: 2.5rem;
+            }
+
+            .video-overlay-content {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .video-overlay-content h3 {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
             }
 
             .contact-container {
@@ -1240,6 +1256,25 @@ export default function HomePage() {
             .service-card {
                 margin: 0;
                 max-width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .video-overlay-content {
+                padding: 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .video-overlay-content h3 {
+                font-size: 1rem;
+            }
+
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.5rem;
             }
 
             .nav-container {
