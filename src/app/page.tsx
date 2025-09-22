@@ -2,7 +2,8 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+// import ReCAPTCHA from "react-google-recaptcha"; // Uncomment when package is installed
 
 export default function HomePage() {
   useEffect(() => {
@@ -89,6 +90,21 @@ export default function HomePage() {
     'h2-math': false,
     'teaching-options': false
   });
+
+  // Form state for spam protection
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    subjectLevel: '',
+    message: '',
+    website: '', // This looks like a legitimate field but it's our spam trap!
+    phoneNumber: '', // Another decoy field
+    companyName: '' // Yet another decoy field
+  });
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<any>(null);
 
   useEffect(() => {
     // Set up video for all devices
@@ -250,6 +266,137 @@ export default function HomePage() {
     setServiceDetailsVisible(prev => ({
       ...prev,
       [serviceType]: !prev[serviceType as keyof typeof prev]
+    }));
+  };
+
+  // Email validation function
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Check for disposable email domains (basic list)
+  const isDisposableEmail = (email: string) => {
+    const disposableDomains = [
+      '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
+      'tempmail.org', 'yopmail.com', 'throwaway.email'
+    ];
+    const domain = email.split('@')[1]?.toLowerCase();
+    return disposableDomains.includes(domain);
+  };
+
+  // Handle form submission with spam protection
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Spam Protection Check #1: Rate limiting (minimum 30 seconds between submissions)
+    const currentTime = Date.now();
+    const timeSinceLastSubmission = currentTime - lastSubmissionTime;
+    const minimumDelay = 30 * 1000; // 30 seconds
+
+    if (lastSubmissionTime > 0 && timeSinceLastSubmission < minimumDelay) {
+      const remainingTime = Math.ceil((minimumDelay - timeSinceLastSubmission) / 1000);
+      alert(`Please wait ${remainingTime} more seconds before submitting again.`);
+      return;
+    }
+
+    // Spam Protection Check #2: Advanced Honeypots (Silent Detection)
+    let isSpam = false;
+    let spamReason = '';
+
+    // Check for filled decoy fields
+    if (formData.website || formData.phoneNumber || formData.companyName) {
+      isSpam = true;
+      spamReason = 'Decoy fields filled';
+    }
+
+    // Check for invalid education levels (contextual honeypot)
+    const validLevels = ['h2-maths', 'h1-maths', 'a-maths'];
+    if (formData.subjectLevel && !validLevels.includes(formData.subjectLevel)) {
+      isSpam = true;
+      spamReason = 'Invalid education level selected';
+    }
+
+    // Spam Protection Check #3: Email validation
+    if (!isValidEmail(formData.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    if (isDisposableEmail(formData.email)) {
+      alert('Please use a permanent email address.');
+      return;
+    }
+
+    // Spam Protection Check #4: Required fields
+    if (!formData.fullName || !formData.email || !formData.message) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Spam Protection Check #5: reCAPTCHA (uncomment when reCAPTCHA is set up)
+    // if (!captchaToken) {
+    //   alert('Please complete the reCAPTCHA verification.');
+    //   return;
+    // }
+
+    // Update last submission time
+    setLastSubmissionTime(currentTime);
+
+    setFormSubmitting(true);
+
+    try {
+      if (isSpam) {
+        // Silent spam handling - log for analysis but show success to user
+        console.log(`Spam submission blocked: ${spamReason}`, {
+          timestamp: new Date().toISOString(),
+          formData: formData,
+          userAgent: navigator.userAgent,
+          ip: 'Client-side detection' // You'd get real IP on server-side
+        });
+
+        // Simulate processing time to avoid suspicion
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Show success message to bot/spammer (but don't actually process)
+        alert('Thank you for your message! We\'ll get back to you soon.');
+      } else {
+        // Legitimate submission - process normally
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Here you would send to your actual backend
+        // await fetch('/api/contact', { method: 'POST', ... });
+
+        alert('Thank you for your message! We\'ll get back to you soon.');
+      }
+
+      // Reset form regardless (maintains consistent behavior)
+      setFormData({
+        fullName: '',
+        email: '',
+        subjectLevel: '',
+        message: '',
+        website: '',
+        phoneNumber: '',
+        companyName: ''
+      });
+
+      // Reset reCAPTCHA
+      setCaptchaToken(null);
+      // captchaRef.current?.reset(); // Uncomment when reCAPTCHA is set up
+    } catch (error) {
+      alert('There was an error sending your message. Please try again.');
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
@@ -1169,6 +1316,20 @@ export default function HomePage() {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             background: var(--light-gray);
+        }
+
+        /* Honeypot field - hidden from users but visible to bots */
+        .honeypot-field {
+            position: absolute !important;
+            left: -9999px !important;
+            width: 1px !important;
+            height: 1px !important;
+            overflow: hidden !important;
+            clip: rect(1px, 1px, 1px, 1px) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         /* Footer */
@@ -2180,36 +2341,120 @@ export default function HomePage() {
             </ul>
           </div>
           <div className="contact-form">
-            <form>
+            <form onSubmit={handleFormSubmit}>
+              {/* Advanced Honeypot fields - hidden from users but look legitimate to bots */}
+              <input
+                type="url"
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                className="honeypot-field"
+                placeholder="Your website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                className="honeypot-field"
+                placeholder="Phone number"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleInputChange}
+                className="honeypot-field"
+                placeholder="Company name"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
               <div className="form-group">
                 <label>Full Name</label>
                 <input
                   type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
                   placeholder="Enter your full name"
                   required
                 />
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="Enter your email" required />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter your email"
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Subject Level</label>
-                <select>
+                <select
+                  name="subjectLevel"
+                  value={formData.subjectLevel}
+                  onChange={handleInputChange}
+                >
                   <option value="">Select your level</option>
-                  <option value="a-maths">A Mathematics (Sec 3-4)</option>
+
+                  {/* Valid options - what we actually offer (in priority order) */}
                   <option value="h2-maths">H2 Mathematics (JC)</option>
+                  <option value="h1-maths">H1 Mathematics (JC)</option>
+                  <option value="a-maths">A Mathematics (Sec 3-4)</option>
+
+                  {/* Honeypot options - these will trigger spam detection */}
+                  <option value="e-maths">E Mathematics (Sec 3-4)</option>
+                  <option value="sec1-2-maths">Sec 1/2 Mathematics</option>
+                  <option value="primary-maths">Primary Mathematics</option>
+
+                  {/* Additional honeypot options */}
+                  <option value="h3-maths">H3 Mathematics (JC)</option>
+                  <option value="ib-maths">IB Mathematics</option>
+                  <option value="university-maths">University Mathematics</option>
+                  <option value="adult-maths">Adult Mathematics</option>
                 </select>
               </div>
               <div className="form-group">
                 <label>Message</label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                   rows={4}
                   placeholder="Tell us about your current mathematics level and learning goals..."
+                  required
                 ></textarea>
               </div>
-              <button type="submit" className="submit-btn">
-                Send Message
+
+              {/* reCAPTCHA Component - Uncomment when package is installed and keys are configured */}
+              {/*
+              <div className="form-group">
+                <ReCAPTCHA
+                  ref={captchaRef}
+                  sitekey="YOUR_SITE_KEY_HERE" // Replace with your actual site key
+                  onChange={(token) => setCaptchaToken(token)}
+                  onExpired={() => setCaptchaToken(null)}
+                />
+              </div>
+              */}
+
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={formSubmitting}
+              >
+                {formSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>
