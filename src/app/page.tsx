@@ -84,6 +84,11 @@ export default function HomePage() {
   const [modalReview, setModalReview] = useState<{title: string, content: string, reviewer: string} | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [serviceDetailsVisible, setServiceDetailsVisible] = useState({
+    'a-math': false,
+    'h2-math': false,
+    'teaching-options': false
+  });
 
   useEffect(() => {
     // Set up video for all devices
@@ -184,13 +189,14 @@ export default function HomePage() {
 
   // Video carousel functionality
   const totalVideos = 3;
+  const maxVideoIndex = 1; // With 3 videos showing 2 at a time, max index is 1
 
   const nextVideo = () => {
-    setCurrentVideoIndex((prev) => (prev + 1) % totalVideos);
+    setCurrentVideoIndex((prev) => (prev + 1) % (maxVideoIndex + 1));
   };
 
   const prevVideo = () => {
-    setCurrentVideoIndex((prev) => (prev - 1 + totalVideos) % totalVideos);
+    setCurrentVideoIndex((prev) => (prev - 1 + (maxVideoIndex + 1)) % (maxVideoIndex + 1));
   };
 
   const goToVideo = (index: number) => {
@@ -203,7 +209,8 @@ export default function HomePage() {
     const indicators = document.querySelectorAll('.video-indicator');
 
     if (videoTrack) {
-      const translateX = -currentVideoIndex * (50 + 1); // 50% width + 1rem gap
+      // With 3 videos showing 2 at a time, translate by 50% per position
+      const translateX = -currentVideoIndex * 50; // Move by 50% per step
       videoTrack.style.transform = `translateX(${translateX}%)`;
     }
 
@@ -238,6 +245,13 @@ export default function HomePage() {
       });
     };
   }, []);
+
+  const toggleServiceDetails = (serviceType: string) => {
+    setServiceDetailsVisible(prev => ({
+      ...prev,
+      [serviceType]: !prev[serviceType as keyof typeof prev]
+    }));
+  };
 
   return (
     <div>
@@ -1556,6 +1570,85 @@ export default function HomePage() {
             }
         }
 
+        /* Service cards read more functionality */
+        .service-summary {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .read-more-service {
+            color: var(--brand-light-blue);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .read-more-service:hover {
+            color: var(--brand-dark-blue);
+        }
+
+        .service-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(79, 195, 215, 0.2);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 300px;
+            }
+        }
+
+        .service-details.hiding {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                max-height: 300px;
+            }
+            to {
+                opacity: 0;
+                max-height: 0;
+            }
+        }
+
+        .service-details ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .service-details li {
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .service-details strong {
+            color: var(--brand-dark-blue);
+        }
+
+        /* Mobile responsive for services */
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .service-details li {
+                margin-bottom: 0.6rem;
+                font-size: 0.95rem;
+            }
+        }
+
       `}</style>
 
       {/* Navigation */}
@@ -1715,7 +1808,6 @@ export default function HomePage() {
               <div className="video-indicators">
                 <span className="video-indicator active" data-slide="0"></span>
                 <span className="video-indicator" data-slide="1"></span>
-                <span className="video-indicator" data-slide="2"></span>
               </div>
             </div>
           </div>
@@ -1869,83 +1961,84 @@ export default function HomePage() {
               <div className="service-icon">📐</div>
               <h3>A Mathematics (Upper Sec)</h3>
               <p>
-                Master Additional Mathematics for Sec 3 & 4 students. Build
-                strong foundations and excel in challenging concepts.
+                Master Additional Mathematics for Sec 3 & 4 students with proven teaching methods.
               </p>
-              <ul className="service-features">
-                <li>Trigonometry & Coordinate Geometry</li>
-                <li>Calculus (Differentiation & Integration)</li>
-                <li>Exponential & Logarithmic Functions</li>
-                <li>Past Year Papers & Exam Techniques</li>
-              </ul>
+              <div className="service-summary">
+                <span
+                  className="read-more-service"
+                  onClick={() => toggleServiceDetails('a-math')}
+                >
+                  {serviceDetailsVisible['a-math'] ? 'read less' : 'read more'}
+                </span>
+              </div>
+              {serviceDetailsVisible['a-math'] && (
+                <div className="service-details">
+                <ul className="service-features">
+                  <li>Trigonometry & Coordinate Geometry</li>
+                  <li>Calculus (Differentiation & Integration)</li>
+                  <li>Exponential & Logarithmic Functions</li>
+                  <li>Past Year Papers & Exam Techniques</li>
+                  <li>Personalized learning pace</li>
+                  <li>Regular progress assessments</li>
+                </ul>
+                </div>
+              )}
             </div>
+
             <div className="service-card">
               <div className="service-icon">📊</div>
               <h3>H2 Mathematics (JC)</h3>
               <p>
-                Comprehensive JC H2 Mathematics tuition covering the entire
-                A-Level syllabus with strategic exam preparation.
+                Comprehensive A-Level H2 Mathematics tuition covering the complete syllabus.
               </p>
-              <ul className="service-features">
-                <li>Pure Mathematics (Functions, Calculus)</li>
-                <li>Statistics (Probability, Distributions)</li>
-                <li>A-Level Exam Strategies</li>
-              </ul>
+              <div className="service-summary">
+                <span
+                  className="read-more-service"
+                  onClick={() => toggleServiceDetails('h2-math')}
+                >
+                  {serviceDetailsVisible['h2-math'] ? 'read less' : 'read more'}
+                </span>
+              </div>
+              {serviceDetailsVisible['h2-math'] && (
+                <div className="service-details">
+                  <ul className="service-features">
+                    <li>Pure Mathematics (Functions, Calculus)</li>
+                    <li>Statistics (Probability, Distributions)</li>
+                    <li>A-Level Exam Strategies & Techniques</li>
+                    <li>Past year paper analysis</li>
+                    <li>Mock examinations & practice tests</li>
+                    <li>University preparation guidance</li>
+                  </ul>
+                </div>
+              )}
             </div>
-            <div className="service-card">
-              <div className="service-icon">👥</div>
-              <h3>Small Group Classes</h3>
-              <p>
-                Learn with peers in small groups of 3-6 students for interactive
-                learning and peer support.
-              </p>
-              <ul className="service-features">
-                <li>Max 6 students per class</li>
-                <li>Collaborative problem-solving</li>
-                <li>Cost-effective option</li>
-                <li>Scheduled weekly sessions</li>
-              </ul>
-            </div>
+
             <div className="service-card">
               <div className="service-icon">🎯</div>
-              <h3>One-on-One Tuition</h3>
+              <h3>Teaching Options</h3>
               <p>
-                Personalized attention with customized lesson plans tailored to
-                individual learning needs and pace.
+                Flexible learning formats tailored to your preferences and learning style.
               </p>
-              <ul className="service-features">
-                <li>Personalized curriculum</li>
-                <li>Flexible scheduling</li>
-                <li>Intensive exam preparation</li>
-                <li>Immediate feedback & support</li>
-              </ul>
-            </div>
-            <div className="service-card">
-              <div className="service-icon">📝</div>
-              <h3>Exam Preparation</h3>
-              <p>
-                Intensive preparation for O-Level A Maths and A-Level H2
-                Mathematics with strategic exam techniques.
-              </p>
-              <ul className="service-features">
-                <li>Past year paper analysis</li>
-                <li>Exam techniques & time management</li>
-                <li>Mock examinations</li>
-                <li>Grade improvement strategies</li>
-              </ul>
-            </div>
-            <div className="service-card">
-              <div className="service-icon">📱</div>
-              <h3>Topical Revision</h3>
-              <p>
-                Intensive holiday courses to catch up, or revise key concepts
-                weekly on top of regular classes.
-              </p>
-              <ul className="service-features">
-                <li>June & December holidays</li>
-                <li>Intensive revision courses</li>
-                <li>Strengthen weak areas</li>
-              </ul>
+              <div className="service-summary">
+                <span
+                  className="read-more-service"
+                  onClick={() => toggleServiceDetails('teaching-options')}
+                >
+                  {serviceDetailsVisible['teaching-options'] ? 'read less' : 'read more'}
+                </span>
+              </div>
+              {serviceDetailsVisible['teaching-options'] && (
+                <div className="service-details">
+                  <ul className="service-features">
+                    <li><strong>One-on-One:</strong> Personalized attention & flexible scheduling</li>
+                    <li><strong>Small Groups:</strong> 3-6 students, collaborative learning</li>
+                    <li><strong>Exam Preparation:</strong> Intensive pre-exam courses</li>
+                    <li><strong>Holiday Revision:</strong> June & December intensive programs</li>
+                    <li><strong>Topical Lessons:</strong> Target specific weak areas</li>
+                    <li><strong>Online Options:</strong> Convenient remote learning</li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
