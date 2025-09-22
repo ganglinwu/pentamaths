@@ -3,7 +3,8 @@
 
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-// import ReCAPTCHA from "react-google-recaptcha"; // Uncomment when package is installed
+// import ReCAPTCHA from "react-google-recaptcha"; // For traditional reCAPTCHA v2
+// Since you're using reCAPTCHA Enterprise, we'll use the enterprise API directly
 
 export default function HomePage() {
   useEffect(() => {
@@ -104,7 +105,19 @@ export default function HomePage() {
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<any>(null);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+
+  // Initialize reCAPTCHA Enterprise
+  useEffect(() => {
+    const checkRecaptcha = () => {
+      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+        setRecaptchaLoaded(true);
+      } else {
+        setTimeout(checkRecaptcha, 100);
+      }
+    };
+    checkRecaptcha();
+  }, []);
 
   useEffect(() => {
     // Set up video for all devices
@@ -334,11 +347,28 @@ export default function HomePage() {
       return;
     }
 
-    // Spam Protection Check #5: reCAPTCHA (uncomment when reCAPTCHA is set up)
-    // if (!captchaToken) {
-    //   alert('Please complete the reCAPTCHA verification.');
-    //   return;
-    // }
+    // Spam Protection Check #5: reCAPTCHA Enterprise (Google's recommended approach)
+    if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+      try {
+        const token = await new Promise<string>((resolve, reject) => {
+          (window as any).grecaptcha.enterprise.ready(async () => {
+            try {
+              const token = await (window as any).grecaptcha.enterprise.execute('6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5', {
+                action: 'contact_form'
+              });
+              resolve(token);
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+        setCaptchaToken(token);
+      } catch (error) {
+        console.error('reCAPTCHA failed:', error);
+        alert('Security verification failed. Please try again.');
+        return;
+      }
+    }
 
     // Update last submission time
     setLastSubmissionTime(currentTime);
@@ -361,11 +391,28 @@ export default function HomePage() {
         // Show success message to bot/spammer (but don't actually process)
         alert('Thank you for your message! We\'ll get back to you soon.');
       } else {
-        // Legitimate submission - process normally
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Legitimate submission - send to backend
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName: formData.fullName,
+            email: formData.email,
+            subjectLevel: formData.subjectLevel,
+            message: formData.message,
+            captchaToken: token,
+            // Include honeypot fields for backend verification
+            website: formData.website,
+            phoneNumber: formData.phoneNumber,
+            companyName: formData.companyName
+          }),
+        });
 
-        // Here you would send to your actual backend
-        // await fetch('/api/contact', { method: 'POST', ... });
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
 
         alert('Thank you for your message! We\'ll get back to you soon.');
       }
@@ -383,7 +430,6 @@ export default function HomePage() {
 
       // Reset reCAPTCHA
       setCaptchaToken(null);
-      // captchaRef.current?.reset(); // Uncomment when reCAPTCHA is set up
     } catch (error) {
       alert('There was an error sending your message. Please try again.');
     } finally {
@@ -2437,17 +2483,14 @@ export default function HomePage() {
                 ></textarea>
               </div>
 
-              {/* reCAPTCHA Component - Uncomment when package is installed and keys are configured */}
-              {/*
-              <div className="form-group">
-                <ReCAPTCHA
-                  ref={captchaRef}
-                  sitekey="YOUR_SITE_KEY_HERE" // Replace with your actual site key
-                  onChange={(token) => setCaptchaToken(token)}
-                  onExpired={() => setCaptchaToken(null)}
-                />
-              </div>
-              */}
+              {/* Google reCAPTCHA Enterprise runs invisibly in the background */}
+              {recaptchaLoaded && (
+                <div className="form-group">
+                  <small style={{ color: 'var(--medium-gray)', fontSize: '0.85rem' }}>
+                    🛡️ This form is protected by Google reCAPTCHA Enterprise
+                  </small>
+                </div>
+              )}
 
               <button
                 type="submit"

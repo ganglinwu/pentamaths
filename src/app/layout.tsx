@@ -36,6 +36,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
+
+        {/* Google reCAPTCHA Enterprise Script */}
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5"></script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

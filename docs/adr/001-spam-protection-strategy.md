@@ -167,6 +167,8 @@ if (isSpam) {
 - If sophisticated bots bypass current protection
 - For regulatory compliance requirements
 
+**Note**: As of 2025, Google is migrating reCAPTCHA to Google Cloud Platform. Consider using Google Cloud reCAPTCHA Enterprise for new implementations.
+
 ### Potential Enhancements
 - Server-side rate limiting by IP address
 - Machine learning spam detection

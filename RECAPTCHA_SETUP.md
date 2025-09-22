@@ -2,17 +2,32 @@
 
 ## Step 1: Get reCAPTCHA Keys
 
-1. Go to https://www.google.com/recaptcha/admin/create
+⚠️ **Important 2025 Update**: Google is migrating reCAPTCHA to Google Cloud Platform. You have two options:
+
+### Option A: Traditional reCAPTCHA (Legacy - will be deprecated)
+1. Go to https://www.google.com/recaptcha/admin
 2. Sign in with your Google account
-3. Fill out the form:
+3. Click the "+" button to add a new site
+4. Fill out the form:
    - **Label**: "Pentamaths Contact Form"
    - **reCAPTCHA type**: Choose "reCAPTCHA v2" > "I'm not a robot" Checkbox
    - **Domains**:
      - Add `localhost` for development
      - Add your actual domain (e.g., `pentamaths.sg`)
    - Accept the Terms of Service
-4. Click "Submit"
-5. Copy your **Site Key** and **Secret Key**
+5. Click "Submit"
+6. Copy your **Site Key** and **Secret Key**
+
+### Option B: Google Cloud reCAPTCHA Enterprise (Recommended for 2025+)
+1. Go to https://console.cloud.google.com/security/recaptcha
+2. Create or select a Google Cloud project
+3. Enable the reCAPTCHA Enterprise API
+4. Create a new reCAPTCHA key:
+   - **Display name**: "Pentamaths Contact Form"
+   - **Platform type**: Website
+   - **reCAPTCHA type**: Choose between v2 Checkbox or v3 Score-based
+   - **Domains**: Add your domains
+5. Copy your **Site Key** and configure authentication
 
 ## Step 2: Set up Environment Variables
 
