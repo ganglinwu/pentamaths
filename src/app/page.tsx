@@ -83,6 +83,7 @@ export default function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
   const [modalReview, setModalReview] = useState<{title: string, content: string, reviewer: string} | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   useEffect(() => {
     // Set up video for all devices
@@ -180,6 +181,63 @@ export default function HomePage() {
       }
     });
   }, [currentSlideIndex]);
+
+  // Video carousel functionality
+  const totalVideos = 3;
+
+  const nextVideo = () => {
+    setCurrentVideoIndex((prev) => (prev + 1) % totalVideos);
+  };
+
+  const prevVideo = () => {
+    setCurrentVideoIndex((prev) => (prev - 1 + totalVideos) % totalVideos);
+  };
+
+  const goToVideo = (index: number) => {
+    setCurrentVideoIndex(index);
+  };
+
+  useEffect(() => {
+    // Update video carousel position
+    const videoTrack = document.getElementById('videoTrack');
+    const indicators = document.querySelectorAll('.video-indicator');
+
+    if (videoTrack) {
+      const translateX = -currentVideoIndex * (50 + 1); // 50% width + 1rem gap
+      videoTrack.style.transform = `translateX(${translateX}%)`;
+    }
+
+    indicators.forEach((indicator, index) => {
+      indicator.classList.toggle('active', index === currentVideoIndex);
+    });
+  }, [currentVideoIndex]);
+
+  useEffect(() => {
+    // Set up video carousel event listeners
+    const videoPrev = document.getElementById('videoPrev');
+    const videoNext = document.getElementById('videoNext');
+    const videoIndicators = document.querySelectorAll('.video-indicator');
+
+    const handlePrevClick = () => prevVideo();
+    const handleNextClick = () => nextVideo();
+
+    videoPrev?.addEventListener('click', handlePrevClick);
+    videoNext?.addEventListener('click', handleNextClick);
+
+    videoIndicators.forEach((indicator, index) => {
+      const handleIndicatorClick = () => goToVideo(index);
+      indicator.addEventListener('click', handleIndicatorClick);
+    });
+
+    return () => {
+      videoPrev?.removeEventListener('click', handlePrevClick);
+      videoNext?.removeEventListener('click', handleNextClick);
+      videoIndicators.forEach((indicator, index) => {
+        const handleIndicatorClick = () => goToVideo(index);
+        indicator.removeEventListener('click', handleIndicatorClick);
+      });
+    };
+  }, []);
 
   return (
     <div>
@@ -1289,6 +1347,215 @@ export default function HomePage() {
                 padding: 0 1rem;
             }
         }
+        /* About the Educator Section */
+        .about-educator {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e1f5fe 100%);
+        }
+
+        .about-educator-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .about-educator .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .about-educator .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .educator-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .educator-intro h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--brand-dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .educator-title {
+            font-size: 1.1rem;
+            color: var(--brand-light-blue);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .educator-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--dark-gray);
+        }
+
+        .teaching-videos-carousel h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-dark-blue);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .videos-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 1rem;
+        }
+
+        .video-slide {
+            min-width: calc(50% - 0.5rem);
+            flex-shrink: 0;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 177.78%; /* 9:16 aspect ratio for shorts */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-label {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--brand-dark-blue);
+            font-size: 1rem;
+        }
+
+        .video-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--brand-dark-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-nav-btn:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .video-prev {
+            left: 1rem;
+        }
+
+        .video-next {
+            right: 1rem;
+        }
+
+        .video-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .video-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(46, 89, 132, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-indicator.active {
+            background: var(--brand-dark-blue);
+            transform: scale(1.2);
+        }
+
+        /* Mobile responsive for about educator */
+        @media (max-width: 768px) {
+            .educator-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .video-slide {
+                min-width: 100%;
+            }
+
+            .video-nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .video-prev {
+                left: 0.5rem;
+            }
+
+            .video-next {
+                right: 0.5rem;
+            }
+
+            .about-educator .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .educator-intro h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .about-educator {
+                padding: 4rem 0;
+            }
+
+            .videos-container {
+                padding: 0.5rem;
+            }
+
+            .video-wrapper {
+                padding-bottom: 177.78%;
+            }
+        }
+
       `}</style>
 
       {/* Navigation */}
@@ -1371,6 +1638,84 @@ export default function HomePage() {
               <p>Join hundreds of successful students</p>
               <div className="video-stats">
                 <span>300+ Students</span> • <span>75% A Rate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About the Educator Section */}
+      <section className="about-educator">
+        <div className="about-educator-container">
+          <div className="section-header">
+            <h2>Meet Your Mathematics Educator</h2>
+            <p>Watch Mr Wu in action - see his teaching style and approach</p>
+          </div>
+
+          <div className="educator-content">
+            <div className="educator-intro">
+              <h3>Mr Wu</h3>
+              <p className="educator-title">Mathematics Educator • 20+ Years Experience</p>
+              <p className="educator-description">
+                Specializing in Upper Secondary A Mathematics and JC H2 Mathematics,
+                Mr Wu has guided hundreds of students to achieve their academic goals through
+                clear explanations and proven teaching methods.
+              </p>
+            </div>
+
+            <div className="teaching-videos-carousel">
+              <h4>Sample Teaching Videos</h4>
+              <div className="videos-container">
+                <div className="video-track" id="videoTrack">
+                  <div className="video-slide">
+                    <div className="video-wrapper">
+                      <iframe
+                        src="https://www.youtube.com/embed/q2C9vl9hU9U"
+                        title="Vectors Teaching"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                    <p className="video-label">Vectors</p>
+                  </div>
+
+                  <div className="video-slide">
+                    <div className="video-wrapper">
+                      <iframe
+                        src="https://www.youtube.com/embed/b3QN-k285Ak"
+                        title="Hypothesis Testing Teaching"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                    <p className="video-label">Hypothesis Testing</p>
+                  </div>
+
+                  <div className="video-slide">
+                    <div className="video-wrapper">
+                      <iframe
+                        src="https://www.youtube.com/embed/aBXwVA6fCfY"
+                        title="Complex Numbers Teaching"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                    <p className="video-label">Complex Numbers</p>
+                  </div>
+
+                </div>
+
+                <button className="video-nav-btn video-prev" id="videoPrev">‹</button>
+                <button className="video-nav-btn video-next" id="videoNext">›</button>
+              </div>
+
+              <div className="video-indicators">
+                <span className="video-indicator active" data-slide="0"></span>
+                <span className="video-indicator" data-slide="1"></span>
+                <span className="video-indicator" data-slide="2"></span>
               </div>
             </div>
           </div>
