@@ -1523,6 +1523,10 @@ export default function HomePage() {
 
         /* Mobile responsive for about educator */
         @media (max-width: 768px) {
+            .educator-intro {
+                display: none;
+            }
+
             .educator-content {
                 grid-template-columns: 1fr;
                 gap: 2rem;
@@ -1636,6 +1640,34 @@ export default function HomePage() {
             color: var(--brand-dark-blue);
         }
 
+        /* Testimonials CTA button */
+        .testimonials-cta {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(79, 195, 215, 0.2);
+        }
+
+        .testimonials-trial-btn {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(245, 200, 66, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .testimonials-trial-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4);
+        }
+
         /* Mobile responsive for services */
         @media (max-width: 768px) {
             .services-grid {
@@ -1646,6 +1678,16 @@ export default function HomePage() {
             .service-details li {
                 margin-bottom: 0.6rem;
                 font-size: 0.95rem;
+            }
+
+            .testimonials-cta {
+                margin-top: 2rem;
+                padding-top: 1.5rem;
+            }
+
+            .testimonials-trial-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
             }
         }
 
@@ -1920,6 +1962,12 @@ export default function HomePage() {
                 <span className="dot" onClick={() => currentSlide(5)}></span>
               </div>
             </div>
+          </div>
+
+          <div className="testimonials-cta">
+            <a href="#contact" className="btn-primary testimonials-trial-btn">
+              Book Your Trial Lesson Today
+            </a>
           </div>
         </div>
       </section>
