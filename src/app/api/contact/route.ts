@@ -18,17 +18,22 @@ async function createAssessment({
   recaptchaAction?: string;
 }) {
   // Handle base64 encoded credentials for Vercel deployment
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  let client;
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    // Parse base64 encoded credentials
     const credentials = JSON.parse(
       Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'base64').toString()
     );
 
-    // Create temporary credentials for the client
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = JSON.stringify(credentials);
+    // Create client with explicit credentials
+    client = new RecaptchaEnterpriseServiceClient({
+      credentials: credentials
+    });
+  } else {
+    // Fallback to default credentials
+    client = new RecaptchaEnterpriseServiceClient();
   }
 
-  // Create the reCAPTCHA client
-  const client = new RecaptchaEnterpriseServiceClient();
   const projectPath = client.projectPath(projectID);
 
   // Build the assessment request
