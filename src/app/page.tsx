@@ -347,35 +347,36 @@ export default function HomePage() {
       return;
     }
 
-    // Spam Protection Check #5: reCAPTCHA Enterprise (Google's recommended approach)
-    if (typeof window !== 'undefined' && (window as any).grecaptcha) {
-      try {
-        const token = await new Promise<string>((resolve, reject) => {
-          (window as any).grecaptcha.enterprise.ready(async () => {
-            try {
-              const token = await (window as any).grecaptcha.enterprise.execute('6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5', {
-                action: 'contact_form'
-              });
-              resolve(token);
-            } catch (error) {
-              reject(error);
-            }
-          });
-        });
-        setCaptchaToken(token);
-      } catch (error) {
-        console.error('reCAPTCHA failed:', error);
-        alert('Security verification failed. Please try again.');
-        return;
-      }
-    }
-
     // Update last submission time
     setLastSubmissionTime(currentTime);
 
     setFormSubmitting(true);
 
     try {
+      // Spam Protection Check #5: reCAPTCHA Enterprise (Google's recommended approach)
+      let recaptchaToken = null;
+      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+        try {
+          recaptchaToken = await new Promise<string>((resolve, reject) => {
+            (window as any).grecaptcha.enterprise.ready(async () => {
+              try {
+                const token = await (window as any).grecaptcha.enterprise.execute('6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5', {
+                  action: 'contact_form'
+                });
+                resolve(token);
+              } catch (error) {
+                reject(error);
+              }
+            });
+          });
+          setCaptchaToken(recaptchaToken);
+        } catch (error) {
+          console.error('reCAPTCHA failed:', error);
+          alert('Security verification failed. Please try again.');
+          return;
+        }
+      }
+
       if (isSpam) {
         // Silent spam handling - log for analysis but show success to user
         console.log(`Spam submission blocked: ${spamReason}`, {
@@ -402,7 +403,7 @@ export default function HomePage() {
             email: formData.email,
             subjectLevel: formData.subjectLevel,
             message: formData.message,
-            captchaToken: token,
+            captchaToken: recaptchaToken,
             // Include honeypot fields for backend verification
             website: formData.website,
             phoneNumber: formData.phoneNumber,
