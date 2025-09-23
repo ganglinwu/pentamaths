@@ -226,15 +226,21 @@ export default function HomePage() {
 
   // Video carousel functionality
   const totalVideos = 3;
-  const maxVideoIndex = 1; // With 3 videos showing 2 at a time, max index is 1
+
+  const getMaxVideoIndex = () => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    return isMobile ? totalVideos - 1 : 1; // Mobile: show 1 video (max index 2), Desktop: show 2 videos (max index 1)
+  };
 
   const nextVideo = () => {
-    setCurrentVideoIndex((prev) => (prev + 1) % (maxVideoIndex + 1));
+    const maxIndex = getMaxVideoIndex();
+    setCurrentVideoIndex((prev) => (prev + 1) % (maxIndex + 1));
   };
 
   const prevVideo = () => {
+    const maxIndex = getMaxVideoIndex();
     setCurrentVideoIndex(
-      (prev) => (prev - 1 + (maxVideoIndex + 1)) % (maxVideoIndex + 1),
+      (prev) => (prev - 1 + (maxIndex + 1)) % (maxIndex + 1),
     );
   };
 
@@ -248,9 +254,18 @@ export default function HomePage() {
     const indicators = document.querySelectorAll(".video-indicator");
 
     if (videoTrack) {
-      // With 3 videos showing 2 at a time, translate by 50% per position
-      const translateX = -currentVideoIndex * 50; // Move by 50% per step
-      videoTrack.style.transform = `translateX(${translateX}%)`;
+      // Check if mobile (window width <= 768px)
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        // On mobile, each video takes 100% width, so move by 100% per step
+        const translateX = -currentVideoIndex * 100;
+        videoTrack.style.transform = `translateX(${translateX}%)`;
+      } else {
+        // On desktop, show 2 videos at a time, move by 50% per step
+        const translateX = -currentVideoIndex * 50;
+        videoTrack.style.transform = `translateX(${translateX}%)`;
+      }
     }
 
     indicators.forEach((indicator, index) => {
@@ -300,6 +315,46 @@ export default function HomePage() {
   useEffect(() => {
     updateTestimonialSlides(currentTestimonialSlideIndex);
   }, [currentTestimonialSlideIndex]);
+
+  useEffect(() => {
+    // Mobile services section collapse functionality
+    const handleServicesHeaderClick = () => {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const servicesSection = document.querySelector('.services');
+        if (servicesSection) {
+          servicesSection.classList.toggle('expanded');
+          servicesSection.classList.toggle('collapsed');
+        }
+      }
+    };
+
+    const servicesHeader = document.querySelector('.services .section-header');
+    if (servicesHeader) {
+      servicesHeader.addEventListener('click', handleServicesHeaderClick);
+    }
+
+    // Initialize as collapsed on mobile
+    const checkAndInitialize = () => {
+      const isMobile = window.innerWidth <= 768;
+      const servicesSection = document.querySelector('.services');
+      if (isMobile && servicesSection) {
+        servicesSection.classList.add('collapsed');
+      } else if (servicesSection) {
+        servicesSection.classList.add('expanded');
+      }
+    };
+
+    checkAndInitialize();
+    window.addEventListener('resize', checkAndInitialize);
+
+    return () => {
+      if (servicesHeader) {
+        servicesHeader.removeEventListener('click', handleServicesHeaderClick);
+      }
+      window.removeEventListener('resize', checkAndInitialize);
+    };
+  }, []);
 
   const toggleServiceDetails = (serviceType: string) => {
     setServiceDetailsVisible((prev) => ({
@@ -949,7 +1004,7 @@ export default function HomePage() {
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.5s ease-in-out;
@@ -987,6 +1042,14 @@ export default function HomePage() {
             font-weight: 600;
             color: var(--brand-dark-blue);
             margin-bottom: 1rem;
+        }
+
+        .testimonial-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-direction: column;
         }
 
         .carousel-dots {
@@ -1662,10 +1725,6 @@ export default function HomePage() {
                 margin-bottom: 0;
             }
 
-            /* Reduce section top padding on mobile */
-            .testimonials {
-                padding-top: 2rem;
-            }
 
             /* Increase testimonial card height on mobile */
             .testimonials .carousel-container {
@@ -1683,17 +1742,15 @@ export default function HomePage() {
                 font-size: 1.8rem;
             }
 
-            /* Reduce top padding for all sections on mobile */
+            /* Reduce top and bottom padding for all sections on mobile */
             .about-educator,
             .testimonials-revamped,
             .stats,
             .services,
             .contact,
-            .cta-section {
+            .cta-section,
+            .testimonials {
                 padding-top: 2rem;
-            }
-
-            .cta-section {
                 padding-bottom: 2rem;
             }
 
@@ -1703,6 +1760,48 @@ export default function HomePage() {
             .services .section-header h2,
             .contact .contact-info h2 {
                 font-size: 1.8rem;
+            }
+
+            /* Collapsible entire services section on mobile */
+            .services .section-header {
+                cursor: pointer;
+                position: relative;
+            }
+
+            .services .section-header::after {
+                content: '▼';
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-50%);
+                color: var(--brand-light-blue);
+                font-size: 1.2rem;
+                transition: transform 0.3s ease;
+            }
+
+            .services.collapsed .section-header::after {
+                transform: translateY(-50%) rotate(180deg);
+            }
+
+            .services .services-grid {
+                display: none;
+                overflow: hidden;
+            }
+
+            .services.expanded .services-grid {
+                display: grid;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    max-height: 0;
+                }
+                to {
+                    opacity: 1;
+                    max-height: 2000px;
+                }
             }
 
 
@@ -1968,6 +2067,10 @@ export default function HomePage() {
             transform: scale(1.2);
         }
 
+        .mobile-only {
+            display: none;
+        }
+
         /* Mobile responsive for about educator */
         @media (max-width: 768px) {
             .educator-intro {
@@ -2000,6 +2103,10 @@ export default function HomePage() {
 
             .about-educator .section-header h2 {
                 font-size: 2rem;
+            }
+
+            .mobile-only {
+                display: inline-block;
             }
 
             .educator-intro h3 {
@@ -2268,11 +2375,13 @@ export default function HomePage() {
             <div className="testimonials-carousel">
               <div className="carousel-container">
                 <div className="testimonial-slide active">
-                  <p>
-                    "hi mr wu, wanted to thank you for all the help with math!
-                    managed to <strong>get an A for H1 math 😊</strong>{" "}
-                    everything else was alright!"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "hi mr wu, wanted to thank you for all the help with math!
+                      managed to <strong>get an A for H1 math 😊</strong>{" "}
+                      everything else was alright!"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2289,9 +2398,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2308,10 +2419,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
-                    much for all your help and guidance!! 🙏🙏🫶🫶"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
+                      much for all your help and guidance!! 🙏🙏🫶🫶"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2328,12 +2441,14 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "OMG Mr Wu!! <strong>I actually got B for H2 Math</strong>{" "}
-                    😭✨ was literally failing everything before joining your
-                    class lol. Thanks for not giving up on me even when I kept
-                    asking the same questions 😅💯"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "OMG Mr Wu!! <strong>I actually got B for H2 Math</strong>{" "}
+                      😭✨ was literally failing everything before joining your
+                      class lol. Thanks for not giving up on me even when I kept
+                      asking the same questions 😅💯"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2350,12 +2465,14 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "Mr Wu is literally the GOAT 🐐✨ went from{" "}
-                    <strong>barely passing to getting A</strong> for A levels!!
-                    His explanations just hit different fr 🔥 highly recommend
-                    if you're struggling with math 📈💪"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "Mr Wu is literally the GOAT 🐐✨ went from{" "}
+                      <strong>barely passing to getting A</strong> for A levels!!
+                      His explanations just hit different fr 🔥 highly recommend
+                      if you're struggling with math 📈💪"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2372,11 +2489,13 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "no cap Mr Wu saved my math grade 💯 was getting straight Us
-                    before his class 😭
-                    <strong>I got a B!</strong> tysm 🥺✨"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "no cap Mr Wu saved my math grade 💯 was getting straight Us
+                      before his class 😭
+                      <strong>I got a B!</strong> tysm 🥺✨"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2393,10 +2512,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>
-                    "Mr Wu is such a vibe!! 😎 makes math actually fun ngl 😂
-                    went from <strong>S to B for H2 math</strong>"
-                  </p>
+                  <div className="testimonial-content">
+                    <p>
+                      "Mr Wu is such a vibe!! 😎 makes math actually fun ngl 😂
+                      went from <strong>S to B for H2 math</strong>"
+                    </p>
+                  </div>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2444,6 +2565,28 @@ export default function HomePage() {
                 ></span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="stats">
+        <div className="stats-container">
+          <div className="stat-item">
+            <span className="stat-number">300+</span>
+            <div className="stat-label">Students Guided</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">75%</span>
+            <div className="stat-label">A1/A2/A Rate</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">20+</span>
+            <div className="stat-label">Years Experience</div>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">2</span>
+            <div className="stat-label">Average Grade Improvement</div>
           </div>
         </div>
       </section>
@@ -2525,6 +2668,7 @@ export default function HomePage() {
               <div className="video-indicators">
                 <span className="video-indicator active" data-slide="0"></span>
                 <span className="video-indicator" data-slide="1"></span>
+                <span className="video-indicator mobile-only" data-slide="2"></span>
               </div>
             </div>
           </div>
@@ -2714,27 +2858,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="stats">
-        <div className="stats-container">
-          <div className="stat-item">
-            <span className="stat-number">300+</span>
-            <div className="stat-label">Students Guided</div>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">75%</span>
-            <div className="stat-label">A1/A2/A Rate</div>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">20+</span>
-            <div className="stat-label">Years Experience</div>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">2</span>
-            <div className="stat-label">Average Grade Improvement</div>
-          </div>
-        </div>
-      </section>
 
       {/* Services Section */}
       <section id="services" className="services">
