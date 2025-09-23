@@ -3,8 +3,6 @@
 
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-// import ReCAPTCHA from "react-google-recaptcha"; // For traditional reCAPTCHA v2
-// Since you're using reCAPTCHA Enterprise, we'll use the enterprise API directly
 
 export default function HomePage() {
   useEffect(() => {
@@ -12,7 +10,9 @@ export default function HomePage() {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", (e) => {
         e.preventDefault();
-        const href = (e.currentTarget as HTMLAnchorElement).getAttribute("href");
+        const href = (e.currentTarget as HTMLAnchorElement).getAttribute(
+          "href",
+        );
         if (href) {
           const target = document.querySelector(href);
           target?.scrollIntoView({
@@ -83,25 +83,30 @@ export default function HomePage() {
 
   const [hasVideo, setHasVideo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [modalReview, setModalReview] = useState<{title: string, content: string, reviewer: string} | null>(null);
+  const [modalReview, setModalReview] = useState<{
+    title: string;
+    content: string;
+    reviewer: string;
+  } | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [currentTestimonialSlideIndex, setCurrentTestimonialSlideIndex] = useState(0);
+  const [currentTestimonialSlideIndex, setCurrentTestimonialSlideIndex] =
+    useState(0);
   const [serviceDetailsVisible, setServiceDetailsVisible] = useState({
-    'a-math': false,
-    'h2-math': false,
-    'teaching-options': false
+    "a-math": false,
+    "h2-math": false,
+    "teaching-options": false,
   });
 
   // Form state for spam protection
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    subjectLevel: '',
-    message: '',
-    website: '', // This looks like a legitimate field but it's our spam trap!
-    phoneNumber: '', // Another decoy field
-    companyName: '' // Yet another decoy field
+    fullName: "",
+    email: "",
+    subjectLevel: "",
+    message: "",
+    website: "", // This looks like a legitimate field but it's our spam trap!
+    phoneNumber: "", // Another decoy field
+    companyName: "", // Yet another decoy field
   });
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0);
@@ -111,7 +116,7 @@ export default function HomePage() {
   // Initialize reCAPTCHA Enterprise
   useEffect(() => {
     const checkRecaptcha = () => {
-      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+      if (typeof window !== "undefined" && (window as any).grecaptcha) {
         setRecaptchaLoaded(true);
       } else {
         setTimeout(checkRecaptcha, 100);
@@ -123,38 +128,38 @@ export default function HomePage() {
   useEffect(() => {
     // Set up video for all devices
     // if (!isMobile) {
-      const video = document.querySelector(".hero-video") as HTMLVideoElement;
-      const heroSection = document.querySelector(".hero");
+    const video = document.querySelector(".hero-video") as HTMLVideoElement;
+    const heroSection = document.querySelector(".hero");
 
-      if (video && heroSection) {
-        const handleVideoLoad = () => {
-          setHasVideo(true);
-          heroSection.classList.add("has-video");
-          // Ensure video plays
-          video.play().catch(() => {
-            console.log("Video autoplay failed");
-          });
-        };
+    if (video && heroSection) {
+      const handleVideoLoad = () => {
+        setHasVideo(true);
+        heroSection.classList.add("has-video");
+        // Ensure video plays
+        video.play().catch(() => {
+          console.log("Video autoplay failed");
+        });
+      };
 
-        const handleVideoError = () => {
-          setHasVideo(false);
-          heroSection.classList.remove("has-video");
-        };
+      const handleVideoError = () => {
+        setHasVideo(false);
+        heroSection.classList.remove("has-video");
+      };
 
-        // Check if video is already loaded
-        if (video.readyState >= 2) {
-          handleVideoLoad();
-        } else {
-          video.addEventListener("loadeddata", handleVideoLoad);
-        }
-
-        video.addEventListener("error", handleVideoError);
-
-        return () => {
-          video.removeEventListener("loadeddata", handleVideoLoad);
-          video.removeEventListener("error", handleVideoError);
-        };
+      // Check if video is already loaded
+      if (video.readyState >= 2) {
+        handleVideoLoad();
+      } else {
+        video.addEventListener("loadeddata", handleVideoLoad);
       }
+
+      video.addEventListener("error", handleVideoError);
+
+      return () => {
+        video.removeEventListener("loadeddata", handleVideoLoad);
+        video.removeEventListener("error", handleVideoError);
+      };
+    }
     // }
   }, [isMobile]);
 
@@ -170,10 +175,10 @@ export default function HomePage() {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
@@ -194,25 +199,27 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    // Update slide visibility and dots with sliding animation
-    const slides = document.querySelectorAll('.testimonial-slide');
-    const dots = document.querySelectorAll('.dot');
+    // Update slide visibility and dots with sliding animation for testimonials-revamped ONLY
+    const slides = document.querySelectorAll(
+      ".testimonials-revamped .testimonial-slide",
+    );
+    const dots = document.querySelectorAll(".testimonials-revamped .dot");
 
     slides.forEach((slide, index) => {
-      slide.classList.remove('active', 'prev');
+      slide.classList.remove("active", "prev");
 
       if (index === currentSlideIndex) {
-        slide.classList.add('active');
+        slide.classList.add("active");
       } else if (index < currentSlideIndex) {
-        slide.classList.add('prev');
+        slide.classList.add("prev");
       }
     });
 
     dots.forEach((dot, index) => {
       if (index === currentSlideIndex) {
-        dot.classList.add('active');
+        dot.classList.add("active");
       } else {
-        dot.classList.remove('active');
+        dot.classList.remove("active");
       }
     });
   }, [currentSlideIndex]);
@@ -226,7 +233,9 @@ export default function HomePage() {
   };
 
   const prevVideo = () => {
-    setCurrentVideoIndex((prev) => (prev - 1 + (maxVideoIndex + 1)) % (maxVideoIndex + 1));
+    setCurrentVideoIndex(
+      (prev) => (prev - 1 + (maxVideoIndex + 1)) % (maxVideoIndex + 1),
+    );
   };
 
   const goToVideo = (index: number) => {
@@ -235,8 +244,8 @@ export default function HomePage() {
 
   useEffect(() => {
     // Update video carousel position
-    const videoTrack = document.getElementById('videoTrack');
-    const indicators = document.querySelectorAll('.video-indicator');
+    const videoTrack = document.getElementById("videoTrack");
+    const indicators = document.querySelectorAll(".video-indicator");
 
     if (videoTrack) {
       // With 3 videos showing 2 at a time, translate by 50% per position
@@ -245,42 +254,47 @@ export default function HomePage() {
     }
 
     indicators.forEach((indicator, index) => {
-      indicator.classList.toggle('active', index === currentVideoIndex);
+      indicator.classList.toggle("active", index === currentVideoIndex);
     });
   }, [currentVideoIndex]);
 
   useEffect(() => {
     // Set up video carousel event listeners
-    const videoPrev = document.getElementById('videoPrev');
-    const videoNext = document.getElementById('videoNext');
-    const videoIndicators = document.querySelectorAll('.video-indicator');
+    const videoPrev = document.getElementById("videoPrev");
+    const videoNext = document.getElementById("videoNext");
+    const videoIndicators = document.querySelectorAll(".video-indicator");
 
     const handlePrevClick = () => prevVideo();
     const handleNextClick = () => nextVideo();
 
-    videoPrev?.addEventListener('click', handlePrevClick);
-    videoNext?.addEventListener('click', handleNextClick);
+    videoPrev?.addEventListener("click", handlePrevClick);
+    videoNext?.addEventListener("click", handleNextClick);
 
     videoIndicators.forEach((indicator, index) => {
       const handleIndicatorClick = () => goToVideo(index);
-      indicator.addEventListener('click', handleIndicatorClick);
+      indicator.addEventListener("click", handleIndicatorClick);
     });
 
     return () => {
-      videoPrev?.removeEventListener('click', handlePrevClick);
-      videoNext?.removeEventListener('click', handleNextClick);
+      videoPrev?.removeEventListener("click", handlePrevClick);
+      videoNext?.removeEventListener("click", handleNextClick);
       videoIndicators.forEach((indicator, index) => {
         const handleIndicatorClick = () => goToVideo(index);
-        indicator.removeEventListener('click', handleIndicatorClick);
+        indicator.removeEventListener("click", handleIndicatorClick);
       });
     };
   }, []);
 
   // Auto-scroll for testimonials section
   useEffect(() => {
-    const interval = setInterval(nextTestimonialSlide, 4000); // Auto-scroll every 4 seconds
+    const interval = setInterval(() => {
+      setCurrentTestimonialSlideIndex((prev) => {
+        const nextIndex = (prev + 1) % totalTestimonialSlides;
+        return nextIndex;
+      });
+    }, 7000); // Auto-scroll every 7 seconds
     return () => clearInterval(interval);
-  }, [currentTestimonialSlideIndex]);
+  }, []);
 
   // Testimonials section state effect
   useEffect(() => {
@@ -288,14 +302,14 @@ export default function HomePage() {
   }, [currentTestimonialSlideIndex]);
 
   const toggleServiceDetails = (serviceType: string) => {
-    setServiceDetailsVisible(prev => ({
+    setServiceDetailsVisible((prev) => ({
       ...prev,
-      [serviceType]: !prev[serviceType as keyof typeof prev]
+      [serviceType]: !prev[serviceType as keyof typeof prev],
     }));
   };
 
   // Testimonials section carousel functionality
-  const totalTestimonialSlides = 3;
+  const totalTestimonialSlides = 7;
 
   const currentTestimonialSlide = (n: number) => {
     const index = n - 1;
@@ -304,30 +318,34 @@ export default function HomePage() {
   };
 
   const updateTestimonialSlides = (activeIndex: number) => {
-    const slides = document.querySelectorAll('#testimonials .testimonial-slide');
-    const dots = document.querySelectorAll('#testimonials .dot');
+    const slides = document.querySelectorAll(
+      "#testimonials .testimonial-slide",
+    );
+    const dots = document.querySelectorAll("#testimonials .dot");
 
     slides.forEach((slide, slideIndex) => {
-      slide.classList.remove('active', 'prev');
+      slide.classList.remove("active", "prev");
       if (slideIndex === activeIndex) {
-        slide.classList.add('active');
+        slide.classList.add("active");
       } else if (slideIndex < activeIndex) {
-        slide.classList.add('prev');
+        slide.classList.add("prev");
       }
     });
 
     dots.forEach((dot, dotIndex) => {
       if (dotIndex === activeIndex) {
-        dot.classList.add('active');
+        dot.classList.add("active");
       } else {
-        dot.classList.remove('active');
+        dot.classList.remove("active");
       }
     });
   };
 
   const nextTestimonialSlide = () => {
-    const nextIndex = (currentTestimonialSlideIndex + 1) % totalTestimonialSlides;
-    currentTestimonialSlide(nextIndex + 1);
+    const nextIndex =
+      (currentTestimonialSlideIndex + 1) % totalTestimonialSlides;
+    setCurrentTestimonialSlideIndex(nextIndex);
+    updateTestimonialSlides(nextIndex);
   };
 
   // Email validation function
@@ -339,10 +357,14 @@ export default function HomePage() {
   // Check for disposable email domains (basic list)
   const isDisposableEmail = (email: string) => {
     const disposableDomains = [
-      '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
-      'tempmail.org', 'yopmail.com', 'throwaway.email'
+      "10minutemail.com",
+      "guerrillamail.com",
+      "mailinator.com",
+      "tempmail.org",
+      "yopmail.com",
+      "throwaway.email",
     ];
-    const domain = email.split('@')[1]?.toLowerCase();
+    const domain = email.split("@")[1]?.toLowerCase();
     return disposableDomains.includes(domain);
   };
 
@@ -356,42 +378,46 @@ export default function HomePage() {
     const minimumDelay = 30 * 1000; // 30 seconds
 
     if (lastSubmissionTime > 0 && timeSinceLastSubmission < minimumDelay) {
-      const remainingTime = Math.ceil((minimumDelay - timeSinceLastSubmission) / 1000);
-      alert(`Please wait ${remainingTime} more seconds before submitting again.`);
+      const remainingTime = Math.ceil(
+        (minimumDelay - timeSinceLastSubmission) / 1000,
+      );
+      alert(
+        `Please wait ${remainingTime} more seconds before submitting again.`,
+      );
       return;
     }
 
     // Spam Protection Check #2: Advanced Honeypots (Silent Detection)
     let isSpam = false;
-    let spamReason = '';
+    let spamReason = "";
 
     // Check for filled decoy fields
     if (formData.website || formData.phoneNumber || formData.companyName) {
       isSpam = true;
-      spamReason = 'Decoy fields filled';
+      spamReason = "Decoy fields filled";
     }
 
     // Check for invalid education levels (contextual honeypot)
-    const validLevels = ['h2-maths', 'h1-maths', 'a-maths'];
+    const validLevels = ["h2-maths", "h1-maths", "a-maths"];
     if (formData.subjectLevel && !validLevels.includes(formData.subjectLevel)) {
       isSpam = true;
-      spamReason = 'Invalid education level selected';
+      spamReason = "Invalid education level selected";
     }
 
     // Spam Protection Check #3: Email validation
     if (!isValidEmail(formData.email)) {
-      alert('Please enter a valid email address.');
+      alert("Please enter a valid email address.");
       return;
     }
 
     if (isDisposableEmail(formData.email)) {
-      alert('Please use a permanent email address.');
+      alert("Please use a permanent email address.");
       return;
     }
 
     // Spam Protection Check #4: Required fields
     if (!formData.fullName || !formData.email || !formData.message) {
-      alert('Please fill in all required fields.');
+      alert("Please fill in all required fields.");
       return;
     }
 
@@ -403,14 +429,19 @@ export default function HomePage() {
     try {
       // Spam Protection Check #5: reCAPTCHA Enterprise (Google's recommended approach)
       let recaptchaToken = null;
-      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+      if (typeof window !== "undefined" && (window as any).grecaptcha) {
         try {
           recaptchaToken = await new Promise<string>((resolve, reject) => {
             (window as any).grecaptcha.enterprise.ready(async () => {
               try {
-                const token = await (window as any).grecaptcha.enterprise.execute('6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5', {
-                  action: 'contact_form'
-                });
+                const token = await (
+                  window as any
+                ).grecaptcha.enterprise.execute(
+                  "6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5",
+                  {
+                    action: "contact_form",
+                  },
+                );
                 resolve(token);
               } catch (error) {
                 reject(error);
@@ -419,8 +450,8 @@ export default function HomePage() {
           });
           setCaptchaToken(recaptchaToken);
         } catch (error) {
-          console.error('reCAPTCHA failed:', error);
-          alert('Security verification failed. Please try again.');
+          console.error("reCAPTCHA failed:", error);
+          alert("Security verification failed. Please try again.");
           return;
         }
       }
@@ -431,20 +462,20 @@ export default function HomePage() {
           timestamp: new Date().toISOString(),
           formData: formData,
           userAgent: navigator.userAgent,
-          ip: 'Client-side detection' // You'd get real IP on server-side
+          ip: "Client-side detection", // You'd get real IP on server-side
         });
 
         // Simulate processing time to avoid suspicion
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // Show success message to bot/spammer (but don't actually process)
-        alert('Thank you for your message! We\'ll get back to you soon.');
+        alert("Thank you for your message! We'll get back to you soon.");
       } else {
         // Legitimate submission - send to backend
-        const response = await fetch('/api/contact', {
-          method: 'POST',
+        const response = await fetch("/api/contact", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             fullName: formData.fullName,
@@ -455,43 +486,47 @@ export default function HomePage() {
             // Include honeypot fields for backend verification
             website: formData.website,
             phoneNumber: formData.phoneNumber,
-            companyName: formData.companyName
+            companyName: formData.companyName,
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to send message');
+          throw new Error("Failed to send message");
         }
 
-        alert('Thank you for your message! We\'ll get back to you soon.');
+        alert("Thank you for your message! We'll get back to you soon.");
       }
 
       // Reset form regardless (maintains consistent behavior)
       setFormData({
-        fullName: '',
-        email: '',
-        subjectLevel: '',
-        message: '',
-        website: '',
-        phoneNumber: '',
-        companyName: ''
+        fullName: "",
+        email: "",
+        subjectLevel: "",
+        message: "",
+        website: "",
+        phoneNumber: "",
+        companyName: "",
       });
 
       // Reset reCAPTCHA
       setCaptchaToken(null);
     } catch (error) {
-      alert('There was an error sending your message. Please try again.');
+      alert("There was an error sending your message. Please try again.");
     } finally {
       setFormSubmitting(false);
     }
   };
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -1977,20 +2012,20 @@ export default function HomePage() {
       <section id="home" className="hero">
         {/* Video Background - loads on all devices */}
         {/* {!isMobile && ( */}
-          <>
-            <video
-              className="hero-video"
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster="/images/hero-fallback.png"
-            >
-              <source src="/videos/math-background.webm" type="video/webm" />
-              <source src="/videos/math-background.mp4" type="video/mp4" />
-            </video>
-            <div className="hero-overlay"></div>
-          </>
+        <>
+          <video
+            className="hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/hero-fallback.png"
+          >
+            <source src="/videos/math-background.webm" type="video/webm" />
+            <source src="/videos/math-background.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-overlay"></div>
+        </>
         {/* )} */}
 
         <div className="hero-container">
@@ -2046,11 +2081,14 @@ export default function HomePage() {
           <div className="educator-content">
             <div className="educator-intro">
               <h3>Mr Wu</h3>
-              <p className="educator-title">Mathematics Educator • 20+ Years Experience</p>
+              <p className="educator-title">
+                Mathematics Educator • 20+ Years Experience
+              </p>
               <p className="educator-description">
-                Specializing in Upper Secondary A Mathematics and JC H2 Mathematics,
-                Mr Wu has guided hundreds of students to achieve their academic goals through
-                clear explanations and proven teaching methods.
+                Specializing in Upper Secondary A Mathematics and JC H2
+                Mathematics, Mr Wu has guided hundreds of students to achieve
+                their academic goals through clear explanations and proven
+                teaching methods.
               </p>
             </div>
 
@@ -2096,11 +2134,14 @@ export default function HomePage() {
                     </div>
                     <p className="video-label">Complex Numbers</p>
                   </div>
-
                 </div>
 
-                <button className="video-nav-btn video-prev" id="videoPrev">‹</button>
-                <button className="video-nav-btn video-next" id="videoNext">›</button>
+                <button className="video-nav-btn video-prev" id="videoPrev">
+                  ‹
+                </button>
+                <button className="video-nav-btn video-next" id="videoNext">
+                  ›
+                </button>
               </div>
 
               <div className="video-indicators">
@@ -2123,7 +2164,10 @@ export default function HomePage() {
           <div className="testimonials-content">
             <div className="teacher-photo">
               <div className="teacher-photo-wrapper">
-                <img src="/images/mrwu/thumbsup.png" alt="Mr Wu - Mathematics Tutor" />
+                <img
+                  src="/images/mrwu/thumbsup.png"
+                  alt="Mr Wu - Mathematics Tutor"
+                />
                 <div className="teacher-info">
                   <h3>Mr Wu</h3>
                   <p>Mathematics Educator</p>
@@ -2136,82 +2180,146 @@ export default function HomePage() {
               <div className="carousel-container">
                 <div className="testimonial-slide active">
                   <div className="review-stars">★★★★★</div>
-                  <p>"I attended the <strong>sec 4 amath class</strong> and <strong>jumped from F9 to A1 for O levels</strong>. Mr Wu is really patient in guiding the class... <span
-                    className="read-more-link"
-                    onClick={() => setModalReview({
-                      title: "Amazing Grade Improvement",
-                      content: "I attended the sec 4 amath class last year and I jumped from a F9 for sec 3 eoy to an A1 for o levels. Mr Wu is really patient in guiding the class as well as in providing help for emath which I also scored an A1 for o levels.",
-                      reviewer: "C"
-                    })}
-                  >
-                    read more
-                  </span>"</p>
+                  <p>
+                    "I attended the <strong>sec 4 amath class</strong> and{" "}
+                    <strong>jumped from F9 to A1 for O levels</strong>. Mr Wu is
+                    really patient in guiding the class...{" "}
+                    <span
+                      className="read-more-link"
+                      onClick={() =>
+                        setModalReview({
+                          title: "Amazing Grade Improvement",
+                          content:
+                            "I attended the sec 4 amath class last year and I jumped from a F9 for sec 3 eoy to an A1 for o levels. Mr Wu is really patient in guiding the class as well as in providing help for emath which I also scored an A1 for o levels.",
+                          reviewer: "C",
+                        })
+                      }
+                    >
+                      read more
+                    </span>
+                    "
+                  </p>
                   <div className="reviewer">- C</div>
                 </div>
 
                 <div className="testimonial-slide">
                   <div className="review-stars">★★★★★</div>
-                  <p>"Both my daughters have been with Pentagon Learning, one doing <strong>A Math</strong> and another <strong>A' levels H2 Math</strong>. <strong>Mr Wu has the patience of a Saint</strong>... <span
-                    className="read-more-link"
-                    onClick={() => setModalReview({
-                      title: "Excellent for Both A Math & H2 Math",
-                      content: "Both my daughters have been with Pentagon Learning for a couple of years, one doing A Math and another just completed A' levels H2 Math. Mr Wu has the patience of a Saint. He believes that Mathematics is about understanding how concepts work instead of just memorizing a bunch of formulas. He ignites the curiosity of his students by encouraging them to ask many questions and shows them the Beauty of Mathematics. He comes up with creative ways to help his students understand different concepts, challenging them to try out different ways to solve questions. My daughters have become better and more confident as they tackled challenging questions.",
-                      reviewer: "ELQ"
-                    })}
-                  >
-                    read more
-                  </span>"</p>
+                  <p>
+                    "Both my daughters have been with Pentagon Learning, one
+                    doing <strong>A Math</strong> and another{" "}
+                    <strong>A' levels H2 Math</strong>.{" "}
+                    <strong>Mr Wu has the patience of a Saint</strong>...{" "}
+                    <span
+                      className="read-more-link"
+                      onClick={() =>
+                        setModalReview({
+                          title: "Excellent for Both A Math & H2 Math",
+                          content:
+                            "Both my daughters have been with Pentagon Learning for a couple of years, one doing A Math and another just completed A' levels H2 Math. Mr Wu has the patience of a Saint. He believes that Mathematics is about understanding how concepts work instead of just memorizing a bunch of formulas. He ignites the curiosity of his students by encouraging them to ask many questions and shows them the Beauty of Mathematics. He comes up with creative ways to help his students understand different concepts, challenging them to try out different ways to solve questions. My daughters have become better and more confident as they tackled challenging questions.",
+                          reviewer: "ELQ",
+                        })
+                      }
+                    >
+                      read more
+                    </span>
+                    "
+                  </p>
                   <div className="reviewer">- ELQ</div>
                 </div>
 
                 <div className="testimonial-slide">
                   <div className="review-stars">★★★★★</div>
-                  <p>"I was struggling with <strong>amaths and could barely do homework</strong>. <strong>Mr Wu simplifies complicated concepts with real-life examples</strong>. He will answer questions within minutes... <span
-                    className="read-more-link"
-                    onClick={() => setModalReview({
-                      title: "From Struggling to Success",
-                      content: "Hi! I am a 2022 secondary 4 student and joined the tuition in june. I was struggling with my amaths and could barely do any of my homework, and I decided to join the tuition center from reccomandation from my classmates. And I did not regret this decision one bit! Mr wu is a really good teacher. You can tell his enthusiasm for maths through his enthusiasm in lessons. He likes to simplify complicated math concepts by relating them to our real-life experinces, making it much easier to swallow down and understand During breaks, he will tell us about some fun math facts! Whenever I have a question, i can always drop him a message and he will answer me within a few minutes! In fact, he always encourages us to ask more questions! Before an exam, he will always ensure that we are well prepare. He will go through any topics that we may be more confused on, and goes through quite a few papers and makes sure we do sufficient practise! sometimes he also gave us advice on our past secondary choices and told us about what he did too! In the end, i jumped from a F9 grade to an a2 grade, so i think this really shows how good of a teacher he is!",
-                      reviewer: "Chong JX"
-                    })}
-                  >
-                    read more
-                  </span>"</p>
+                  <p>
+                    "I was struggling with{" "}
+                    <strong>amaths and could barely do homework</strong>.{" "}
+                    <strong>
+                      Mr Wu simplifies complicated concepts with real-life
+                      examples
+                    </strong>
+                    . He will answer questions within minutes...{" "}
+                    <span
+                      className="read-more-link"
+                      onClick={() =>
+                        setModalReview({
+                          title: "From Struggling to Success",
+                          content:
+                            "Hi! I am a 2022 secondary 4 student and joined the tuition in june. I was struggling with my amaths and could barely do any of my homework, and I decided to join the tuition center from reccomandation from my classmates. And I did not regret this decision one bit! Mr wu is a really good teacher. You can tell his enthusiasm for maths through his enthusiasm in lessons. He likes to simplify complicated math concepts by relating them to our real-life experinces, making it much easier to swallow down and understand During breaks, he will tell us about some fun math facts! Whenever I have a question, i can always drop him a message and he will answer me within a few minutes! In fact, he always encourages us to ask more questions! Before an exam, he will always ensure that we are well prepare. He will go through any topics that we may be more confused on, and goes through quite a few papers and makes sure we do sufficient practise! sometimes he also gave us advice on our past secondary choices and told us about what he did too! In the end, i jumped from a F9 grade to an a2 grade, so i think this really shows how good of a teacher he is!",
+                          reviewer: "Chong JX",
+                        })
+                      }
+                    >
+                      read more
+                    </span>
+                    "
+                  </p>
                   <div className="reviewer">- Chong JX</div>
                 </div>
 
                 <div className="testimonial-slide">
                   <div className="review-stars">★★★★★</div>
-                  <p>"Mr Wu is a <strong>competent tutor who relates his teaching very well</strong> to my child. He is able to <strong>stimulate interests in math and motivate them to maximise their potential</strong>... <span
-                    className="read-more-link"
-                    onClick={() => setModalReview({
-                      title: "Competent & Motivating Tutor",
-                      content: "Mr Wu is a competent tutor who is able to relate his teaching very well to my child. He is able to stimulate the interests of his students in math and motivate them to maximise their potential in learning. His patience and joviality have won his students' hearts.",
-                      reviewer: "N Koh"
-                    })}
-                  >
-                    read more
-                  </span>"</p>
+                  <p>
+                    "Mr Wu is a{" "}
+                    <strong>
+                      competent tutor who relates his teaching very well
+                    </strong>{" "}
+                    to my child. He is able to{" "}
+                    <strong>
+                      stimulate interests in math and motivate them to maximise
+                      their potential
+                    </strong>
+                    ...{" "}
+                    <span
+                      className="read-more-link"
+                      onClick={() =>
+                        setModalReview({
+                          title: "Competent & Motivating Tutor",
+                          content:
+                            "Mr Wu is a competent tutor who is able to relate his teaching very well to my child. He is able to stimulate the interests of his students in math and motivate them to maximise their potential in learning. His patience and joviality have won his students' hearts.",
+                          reviewer: "N Koh",
+                        })
+                      }
+                    >
+                      read more
+                    </span>
+                    "
+                  </p>
                   <div className="reviewer">- N Koh</div>
                 </div>
 
                 <div className="testimonial-slide">
                   <div className="review-stars">★★★★★</div>
-                  <p>"<strong>A Truly Exceptional Math Teacher</strong> - I highly recommend Mr. Wu for anyone seeking to deepen their understanding of <strong>H2 Math</strong>. He has a <strong>remarkable ability to simplify complex concepts</strong>... <span
-                    className="read-more-link"
-                    onClick={() => setModalReview({
-                      title: "A Truly Exceptional H2 Math Teacher",
-                      content: "I highly recommend Mr. Wu at Pentagon Learning for anyone seeking to deepen their understanding of H2 Math. He is a truly exceptional educator who brings a unique and highly effective perspective to teaching. Mr. Wu has a remarkable ability to simplify complex concepts, making them accessible and intuitive. His innovative teaching methods not only helped me grasp challenging topics but also ignited a genuine interest in the subject. If you are looking for a teacher who can truly help you learn from the best and see math in a new light, Mr. Wu is the one to choose. The profound knowledge and insights you gain from his classes are an invaluable investment, far more rewarding than any temporary incentive. His dedication and approach make him an invaluable resource.",
-                      reviewer: "M Tang"
-                    })}
-                  >
-                    read more
-                  </span>"</p>
+                  <p>
+                    "<strong>A Truly Exceptional Math Teacher</strong> - I
+                    highly recommend Mr. Wu for anyone seeking to deepen their
+                    understanding of <strong>H2 Math</strong>. He has a{" "}
+                    <strong>
+                      remarkable ability to simplify complex concepts
+                    </strong>
+                    ...{" "}
+                    <span
+                      className="read-more-link"
+                      onClick={() =>
+                        setModalReview({
+                          title: "A Truly Exceptional H2 Math Teacher",
+                          content:
+                            "I highly recommend Mr. Wu at Pentagon Learning for anyone seeking to deepen their understanding of H2 Math. He is a truly exceptional educator who brings a unique and highly effective perspective to teaching. Mr. Wu has a remarkable ability to simplify complex concepts, making them accessible and intuitive. His innovative teaching methods not only helped me grasp challenging topics but also ignited a genuine interest in the subject. If you are looking for a teacher who can truly help you learn from the best and see math in a new light, Mr. Wu is the one to choose. The profound knowledge and insights you gain from his classes are an invaluable investment, far more rewarding than any temporary incentive. His dedication and approach make him an invaluable resource.",
+                          reviewer: "M Tang",
+                        })
+                      }
+                    >
+                      read more
+                    </span>
+                    "
+                  </p>
                   <div className="reviewer">- M Tang</div>
                 </div>
               </div>
 
               <div className="carousel-dots">
-                <span className="dot active" onClick={() => currentSlide(1)}></span>
+                <span
+                  className="dot active"
+                  onClick={() => currentSlide(1)}
+                ></span>
                 <span className="dot" onClick={() => currentSlide(2)}></span>
                 <span className="dot" onClick={() => currentSlide(3)}></span>
                 <span className="dot" onClick={() => currentSlide(4)}></span>
@@ -2265,26 +2373,27 @@ export default function HomePage() {
               <div className="service-icon">📐</div>
               <h3>A Mathematics (Upper Sec)</h3>
               <p>
-                Master Additional Mathematics for Sec 3 & 4 students with proven teaching methods.
+                Master Additional Mathematics for Sec 3 & 4 students with proven
+                teaching methods.
               </p>
               <div className="service-summary">
                 <span
                   className="read-more-service"
-                  onClick={() => toggleServiceDetails('a-math')}
+                  onClick={() => toggleServiceDetails("a-math")}
                 >
-                  {serviceDetailsVisible['a-math'] ? 'read less' : 'read more'}
+                  {serviceDetailsVisible["a-math"] ? "read less" : "read more"}
                 </span>
               </div>
-              {serviceDetailsVisible['a-math'] && (
+              {serviceDetailsVisible["a-math"] && (
                 <div className="service-details">
-                <ul className="service-features">
-                  <li>Trigonometry & Coordinate Geometry</li>
-                  <li>Calculus (Differentiation & Integration)</li>
-                  <li>Exponential & Logarithmic Functions</li>
-                  <li>Past Year Papers & Exam Techniques</li>
-                  <li>Personalized learning pace</li>
-                  <li>Regular progress assessments</li>
-                </ul>
+                  <ul className="service-features">
+                    <li>Trigonometry & Coordinate Geometry</li>
+                    <li>Calculus (Differentiation & Integration)</li>
+                    <li>Exponential & Logarithmic Functions</li>
+                    <li>Past Year Papers & Exam Techniques</li>
+                    <li>Personalized learning pace</li>
+                    <li>Regular progress assessments</li>
+                  </ul>
                 </div>
               )}
             </div>
@@ -2293,17 +2402,18 @@ export default function HomePage() {
               <div className="service-icon">📊</div>
               <h3>H2 Mathematics (JC)</h3>
               <p>
-                Comprehensive A-Level H2 Mathematics tuition covering the complete syllabus.
+                Comprehensive A-Level H2 Mathematics tuition covering the
+                complete syllabus.
               </p>
               <div className="service-summary">
                 <span
                   className="read-more-service"
-                  onClick={() => toggleServiceDetails('h2-math')}
+                  onClick={() => toggleServiceDetails("h2-math")}
                 >
-                  {serviceDetailsVisible['h2-math'] ? 'read less' : 'read more'}
+                  {serviceDetailsVisible["h2-math"] ? "read less" : "read more"}
                 </span>
               </div>
-              {serviceDetailsVisible['h2-math'] && (
+              {serviceDetailsVisible["h2-math"] && (
                 <div className="service-details">
                   <ul className="service-features">
                     <li>Pure Mathematics (Functions, Calculus)</li>
@@ -2321,25 +2431,46 @@ export default function HomePage() {
               <div className="service-icon">🎯</div>
               <h3>Teaching Options</h3>
               <p>
-                Flexible learning formats tailored to your preferences and learning style.
+                Flexible learning formats tailored to your preferences and
+                learning style.
               </p>
               <div className="service-summary">
                 <span
                   className="read-more-service"
-                  onClick={() => toggleServiceDetails('teaching-options')}
+                  onClick={() => toggleServiceDetails("teaching-options")}
                 >
-                  {serviceDetailsVisible['teaching-options'] ? 'read less' : 'read more'}
+                  {serviceDetailsVisible["teaching-options"]
+                    ? "read less"
+                    : "read more"}
                 </span>
               </div>
-              {serviceDetailsVisible['teaching-options'] && (
+              {serviceDetailsVisible["teaching-options"] && (
                 <div className="service-details">
                   <ul className="service-features">
-                    <li><strong>One-on-One:</strong> Personalized attention & flexible scheduling</li>
-                    <li><strong>Small Groups:</strong> 3-6 students, collaborative learning</li>
-                    <li><strong>Exam Preparation:</strong> Intensive pre-exam courses</li>
-                    <li><strong>Holiday Revision:</strong> June & December intensive programs</li>
-                    <li><strong>Topical Lessons:</strong> Target specific weak areas</li>
-                    <li><strong>Online Options:</strong> Convenient remote learning</li>
+                    <li>
+                      <strong>One-on-One:</strong> Personalized attention &
+                      flexible scheduling
+                    </li>
+                    <li>
+                      <strong>Small Groups:</strong> 3-6 students, collaborative
+                      learning
+                    </li>
+                    <li>
+                      <strong>Exam Preparation:</strong> Intensive pre-exam
+                      courses
+                    </li>
+                    <li>
+                      <strong>Holiday Revision:</strong> June & December
+                      intensive programs
+                    </li>
+                    <li>
+                      <strong>Topical Lessons:</strong> Target specific weak
+                      areas
+                    </li>
+                    <li>
+                      <strong>Online Options:</strong> Convenient remote
+                      learning
+                    </li>
                   </ul>
                 </div>
               )}
@@ -2362,7 +2493,10 @@ export default function HomePage() {
           <div className="testimonials-content">
             <div className="teacher-photo">
               <div className="teacher-photo-wrapper">
-                <img src="/images/mrwu/success.png" alt="Mr Wu - Mathematics Success" />
+                <img
+                  src="/images/mrwu/success.png"
+                  alt="Mr Wu - Mathematics Success"
+                />
                 <div className="teacher-info">
                   <h3>Mr Wu</h3>
                   <p>Mathematics Educator</p>
@@ -2374,8 +2508,11 @@ export default function HomePage() {
             <div className="testimonials-carousel">
               <div className="carousel-container">
                 <div className="testimonial-slide active">
-                  <p>"hi mr wu, wanted to thank you for all the help with math!
-                  managed to <strong>get an A for H1 math 😊</strong> everything else was alright!"</p>
+                  <p>
+                    "hi mr wu, wanted to thank you for all the help with math!
+                    managed to <strong>get an A for H1 math 😊</strong>{" "}
+                    everything else was alright!"
+                  </p>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2392,7 +2529,9 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>"HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"</p>
+                  <p>
+                    "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
+                  </p>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2409,8 +2548,10 @@ export default function HomePage() {
                 </div>
 
                 <div className="testimonial-slide">
-                  <p>"Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so much for all your
-                  help and guidance!! 🙏🙏🫶🫶"</p>
+                  <p>
+                    "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
+                    much for all your help and guidance!! 🙏🙏🫶🫶"
+                  </p>
                   <div className="testimonial-author">
                     <div className="author-avatar">
                       <img
@@ -2425,12 +2566,122 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "OMG Mr Wu!! <strong>I actually got B for H2 Math</strong>{" "}
+                    😭✨ was literally failing everything before joining your
+                    class lol. Thanks for not giving up on me even when I kept
+                    asking the same questions 😅💯"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/tmjc-logo.png"
+                        alt="Tampines Meridian Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>K</h4>
+                      <p>TMJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "Mr Wu is literally the GOAT 🐐✨ went from{" "}
+                    <strong>barely passing to getting A</strong> for A levels!!
+                    His explanations just hit different fr 🔥 highly recommend
+                    if you're struggling with math 📈💪"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/asrjc-logo.png"
+                        alt="Anderson Serangoon Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>M</h4>
+                      <p>ASRJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "no cap Mr Wu saved my math grade 💯 was getting straight Us
+                    before his class 😭
+                    <strong>I got a B!</strong> tysm 🥺✨"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/sajc-logo.png"
+                        alt="Saint Andrew's Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>K</h4>
+                      <p>SAJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "Mr Wu is such a vibe!! 😎 makes math actually fun ngl 😂
+                    went from <strong>S to B for H2 math</strong>"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/nyjc-logo.png"
+                        alt="Nanyang Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>A</h4>
+                      <p>NYJC</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="carousel-dots">
-                <span className="dot active" onClick={() => currentTestimonialSlide(1)}></span>
-                <span className="dot" onClick={() => currentTestimonialSlide(2)}></span>
-                <span className="dot" onClick={() => currentTestimonialSlide(3)}></span>
+                <span
+                  className="dot active"
+                  onClick={() => currentTestimonialSlide(1)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(2)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(3)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(4)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(5)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(6)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(7)}
+                ></span>
               </div>
             </div>
           </div>
@@ -2527,15 +2778,12 @@ export default function HomePage() {
                   <option value="a-maths">A Mathematics (Sec 3-4)</option>
 
                   {/* Honeypot options - these will trigger spam detection */}
-                  <option value="e-maths">E Mathematics (Sec 3-4)</option>
-                  <option value="sec1-2-maths">Sec 1/2 Mathematics</option>
-                  <option value="primary-maths">Primary Mathematics</option>
-
-                  {/* Additional honeypot options */}
-                  <option value="h3-maths">H3 Mathematics (JC)</option>
-                  <option value="ib-maths">IB Mathematics</option>
-                  <option value="university-maths">University Mathematics</option>
-                  <option value="adult-maths">Adult Mathematics</option>
+                  <option value="primary-maths">Primary 1 Mathematics</option>
+                  <option value="primary-maths">Primary 2 Mathematics</option>
+                  <option value="primary-maths">Primary 3 Mathematics</option>
+                  <option value="primary-maths">Primary 4 Mathematics</option>
+                  <option value="primary-maths">Primary 5 Mathematics</option>
+                  <option value="primary-maths">Primary 6 Mathematics</option>
                 </select>
               </div>
               <div className="form-group">
@@ -2553,7 +2801,9 @@ export default function HomePage() {
               {/* Google reCAPTCHA Enterprise runs invisibly in the background */}
               {recaptchaLoaded && (
                 <div className="form-group">
-                  <small style={{ color: 'var(--medium-gray)', fontSize: '0.85rem' }}>
+                  <small
+                    style={{ color: "var(--medium-gray)", fontSize: "0.85rem" }}
+                  >
                     🛡️ This form is protected by Google reCAPTCHA Enterprise
                   </small>
                 </div>
@@ -2564,7 +2814,7 @@ export default function HomePage() {
                 className="submit-btn"
                 disabled={formSubmitting}
               >
-                {formSubmitting ? 'Sending...' : 'Send Message'}
+                {formSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
@@ -2582,7 +2832,10 @@ export default function HomePage() {
       {modalReview && (
         <div className="modal-overlay" onClick={() => setModalReview(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setModalReview(null)}>
+            <button
+              className="modal-close"
+              onClick={() => setModalReview(null)}
+            >
               ×
             </button>
             <h3>{modalReview.title}</h3>

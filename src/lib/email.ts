@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import sgMail from '@sendgrid/mail';
+import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 
 interface ContactFormData {
   fullName: string;
@@ -15,14 +15,18 @@ if (process.env.SENDGRID_API_KEY) {
 
 // Create Nodemailer transporter if SMTP config is provided
 const createTransporter = () => {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  if (
+    !process.env.SMTP_HOST ||
+    !process.env.SMTP_USER ||
+    !process.env.SMTP_PASS
+  ) {
     return null;
   }
 
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
+    port: parseInt(process.env.SMTP_PORT || "587"),
+    secure: process.env.SMTP_PORT === "465", // true for 465, false for other ports
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -68,19 +72,24 @@ const createContactEmailHTML = (data: ContactFormData) => `
 
       <div class="field">
         <div class="label">📚 Subject Level:</div>
-        <div class="value">${data.subjectLevel === 'h2-maths' ? 'H2 Mathematics (JC)' :
-                           data.subjectLevel === 'h1-maths' ? 'H1 Mathematics (JC)' :
-                           data.subjectLevel === 'a-maths' ? 'A Mathematics (Sec 3-4)' :
-                           data.subjectLevel}</div>
+        <div class="value">${
+          data.subjectLevel === "h2-maths"
+            ? "H2 Mathematics (JC)"
+            : data.subjectLevel === "h1-maths"
+              ? "H1 Mathematics (JC)"
+              : data.subjectLevel === "a-maths"
+                ? "A Mathematics (Sec 3-4)"
+                : data.subjectLevel
+        }</div>
       </div>
 
       <div class="field">
         <div class="label">💬 Message:</div>
-        <div class="value">${data.message.replace(/\n/g, '<br>')}</div>
+        <div class="value">${data.message.replace(/\n/g, "<br>")}</div>
       </div>
 
       <div class="footer">
-        <p>📅 Received: ${new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' })}</p>
+        <p>📅 Received: ${new Date().toLocaleString("en-SG", { timeZone: "Asia/Singapore" })}</p>
         <p>🛡️ This submission passed all spam protection checks</p>
         <p>🚀 Powered by Pentamaths Contact System</p>
       </div>
@@ -95,16 +104,21 @@ New Contact Form Submission - Pentamaths
 
 Full Name: ${data.fullName}
 Email: ${data.email}
-Subject Level: ${data.subjectLevel === 'h2-maths' ? 'H2 Mathematics (JC)' :
-               data.subjectLevel === 'h1-maths' ? 'H1 Mathematics (JC)' :
-               data.subjectLevel === 'a-maths' ? 'A Mathematics (Sec 3-4)' :
-               data.subjectLevel}
+Subject Level: ${
+  data.subjectLevel === "h2-maths"
+    ? "H2 Mathematics (JC)"
+    : data.subjectLevel === "h1-maths"
+      ? "H1 Mathematics (JC)"
+      : data.subjectLevel === "a-maths"
+        ? "A Mathematics (Sec 3-4)"
+        : data.subjectLevel
+}
 
 Message:
 ${data.message}
 
 ---
-Received: ${new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' })}
+Received: ${new Date().toLocaleString("en-SG", { timeZone: "Asia/Singapore" })}
 This submission passed all spam protection checks.
 `;
 
@@ -128,10 +142,15 @@ const createAutoReplyHTML = (data: ContactFormData) => `
   <div class="container">
     <div class="header">
       <h2>🎓 Thank You, ${data.fullName}!</h2>
-      <p>We've received your inquiry about ${data.subjectLevel === 'h2-maths' ? 'H2 Mathematics' :
-                                           data.subjectLevel === 'h1-maths' ? 'H1 Mathematics' :
-                                           data.subjectLevel === 'a-maths' ? 'A Mathematics' :
-                                           'Mathematics'} tuition</p>
+      <p>We've received your inquiry about ${
+        data.subjectLevel === "h2-maths"
+          ? "H2 Mathematics"
+          : data.subjectLevel === "h1-maths"
+            ? "H1 Mathematics"
+            : data.subjectLevel === "a-maths"
+              ? "A Mathematics"
+              : "Mathematics"
+      } tuition</p>
     </div>
 
     <div class="content">
@@ -149,6 +168,8 @@ const createAutoReplyHTML = (data: ContactFormData) => `
       </div>
 
       <p>In the meantime, feel free to check out our sample teaching videos on the website to get a feel for Mr Wu's teaching style.</p>
+        <p><strong>🌐 YouTube:</strong> https://youtube.com/@pentamaths</p>
+        <p><strong>📷 IG:</strong> https://instagram.com/pentamaths.sg/ </p>
 
       <div class="footer">
         <p><strong>📧 Email:</strong> ask@pentamaths.sg</p>
@@ -166,9 +187,11 @@ const createAutoReplyHTML = (data: ContactFormData) => `
 </html>
 `;
 
-export async function sendContactEmail(data: ContactFormData): Promise<boolean> {
-  const toEmail = process.env.CONTACT_EMAIL_TO || 'ask@pentamaths.sg';
-  const fromEmail = process.env.CONTACT_EMAIL_FROM || 'noreply@pentamaths.sg';
+export async function sendContactEmail(
+  data: ContactFormData,
+): Promise<boolean> {
+  const toEmail = process.env.CONTACT_EMAIL_TO || "ask@pentamaths.sg";
+  const fromEmail = process.env.CONTACT_EMAIL_FROM || "noreply@pentamaths.sg";
 
   try {
     // Option 1: Try SendGrid first
@@ -182,18 +205,18 @@ export async function sendContactEmail(data: ContactFormData): Promise<boolean> 
       };
 
       await sgMail.send(msg);
-      console.log('Contact email sent via SendGrid');
+      console.log("Contact email sent via SendGrid");
 
       // Send auto-reply
       const autoReplyMsg = {
         to: data.email,
         from: fromEmail,
-        subject: 'Thank you for contacting Pentamaths!',
+        subject: "Thank you for contacting Pentamaths!",
         html: createAutoReplyHTML(data),
       };
 
       await sgMail.send(autoReplyMsg);
-      console.log('Auto-reply sent via SendGrid');
+      console.log("Auto-reply sent via SendGrid");
 
       return true;
     }
@@ -214,19 +237,18 @@ export async function sendContactEmail(data: ContactFormData): Promise<boolean> 
       await transporter.sendMail({
         from: fromEmail,
         to: data.email,
-        subject: 'Thank you for contacting Pentamaths!',
+        subject: "Thank you for contacting Pentamaths!",
         html: createAutoReplyHTML(data),
       });
 
-      console.log('Emails sent via SMTP');
+      console.log("Emails sent via SMTP");
       return true;
     }
 
-    console.error('No email service configured');
+    console.error("No email service configured");
     return false;
-
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return false;
   }
 }
