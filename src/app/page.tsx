@@ -1300,7 +1300,8 @@ export default function HomePage() {
 
 .testimonial-author {
     display: flex;
-    align-items: centre;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
 }
 
@@ -1598,6 +1599,51 @@ export default function HomePage() {
                 flex-direction: column;
                 align-items: center;
                 gap: 1rem;
+            }
+
+            /* Reduce testimonials title size on mobile */
+            .testimonials .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .testimonials .section-header p {
+                font-size: 1rem;
+            }
+
+            /* Hide teacher photo section on mobile */
+            .testimonials .teacher-photo {
+                display: none;
+            }
+
+            .testimonials .testimonials-content {
+                grid-template-columns: 1fr;
+            }
+
+            /* Increase testimonial text size on mobile */
+            .testimonials .testimonial-slide p {
+                font-size: 1.1rem;
+                line-height: 1.6;
+            }
+
+            /* Remove bottom margin from section header on mobile */
+            .testimonials .section-header {
+                margin-bottom: 0;
+            }
+
+            /* Reduce section top padding on mobile */
+            .testimonials {
+                padding-top: 3rem;
+            }
+
+            /* Increase testimonial card height on mobile */
+            .testimonials .carousel-container {
+                height: 400px;
+            }
+
+            /* Make carousel dots smaller on mobile */
+            .testimonials .dot {
+                width: 8px;
+                height: 8px;
             }
 
             .contact-container {
