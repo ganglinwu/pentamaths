@@ -655,6 +655,10 @@ export default function HomePage() {
             box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4);
         }
 
+        .cta-mobile {
+            display: none;
+        }
+
         /* Hero Section */
 /* Video Background */
 .hero-video {
@@ -1500,6 +1504,25 @@ export default function HomePage() {
             display: none;
         }
 
+        /* Call to Action Section */
+        .cta-section {
+            background: var(--light-gray);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .cta-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .cta-large {
+            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+        }
+
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -1513,6 +1536,15 @@ export default function HomePage() {
             .cta-button {
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
+            }
+
+            /* Show mobile text, hide desktop text */
+            .cta-desktop {
+                display: none;
+            }
+
+            .cta-mobile {
+                display: inline;
             }
 
             /* Hide all content overlays on mobile */
@@ -1632,7 +1664,7 @@ export default function HomePage() {
 
             /* Reduce section top padding on mobile */
             .testimonials {
-                padding-top: 3rem;
+                padding-top: 2rem;
             }
 
             /* Increase testimonial card height on mobile */
@@ -1645,6 +1677,34 @@ export default function HomePage() {
                 width: 8px;
                 height: 8px;
             }
+
+            /* Make about educator title consistent with other mobile titles */
+            .about-educator .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            /* Reduce top padding for all sections on mobile */
+            .about-educator,
+            .testimonials-revamped,
+            .stats,
+            .services,
+            .contact,
+            .cta-section {
+                padding-top: 2rem;
+            }
+
+            .cta-section {
+                padding-bottom: 2rem;
+            }
+
+            /* Make all section titles consistent size on mobile */
+            .section-header h2,
+            .testimonials-revamped .section-header h2,
+            .services .section-header h2,
+            .contact .contact-info h2 {
+                font-size: 1.8rem;
+            }
+
 
             .contact-container {
                 grid-template-columns: 1fr;
@@ -1772,10 +1832,7 @@ export default function HomePage() {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--brand-dark-blue);
         }
 
         .educator-content {
@@ -2102,7 +2159,8 @@ export default function HomePage() {
             </li>
           </ul>
           <a href="#contact" className="cta-button">
-            Get Started
+            <span className="cta-desktop">Get Started</span>
+            <span className="cta-mobile">Book Trial</span>
           </a>
         </div>
       </nav>
@@ -2394,7 +2452,7 @@ export default function HomePage() {
       <section className="about-educator">
         <div className="about-educator-container">
           <div className="section-header">
-            <h2>Meet Your Mathematics Educator</h2>
+            <h2>Hi, I'm Mr Wu!</h2>
             <p>Watch Mr Wu in action - see his teaching style and approach</p>
           </div>
 
