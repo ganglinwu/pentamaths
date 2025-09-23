@@ -86,6 +86,7 @@ export default function HomePage() {
   const [modalReview, setModalReview] = useState<{title: string, content: string, reviewer: string} | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [currentTestimonialSlideIndex, setCurrentTestimonialSlideIndex] = useState(0);
   const [serviceDetailsVisible, setServiceDetailsVisible] = useState({
     'a-math': false,
     'h2-math': false,
@@ -275,11 +276,58 @@ export default function HomePage() {
     };
   }, []);
 
+  // Auto-scroll for testimonials section
+  useEffect(() => {
+    const interval = setInterval(nextTestimonialSlide, 4000); // Auto-scroll every 4 seconds
+    return () => clearInterval(interval);
+  }, [currentTestimonialSlideIndex]);
+
+  // Testimonials section state effect
+  useEffect(() => {
+    updateTestimonialSlides(currentTestimonialSlideIndex);
+  }, [currentTestimonialSlideIndex]);
+
   const toggleServiceDetails = (serviceType: string) => {
     setServiceDetailsVisible(prev => ({
       ...prev,
       [serviceType]: !prev[serviceType as keyof typeof prev]
     }));
+  };
+
+  // Testimonials section carousel functionality
+  const totalTestimonialSlides = 3;
+
+  const currentTestimonialSlide = (n: number) => {
+    const index = n - 1;
+    setCurrentTestimonialSlideIndex(index);
+    updateTestimonialSlides(index);
+  };
+
+  const updateTestimonialSlides = (activeIndex: number) => {
+    const slides = document.querySelectorAll('#testimonials .testimonial-slide');
+    const dots = document.querySelectorAll('#testimonials .dot');
+
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.remove('active', 'prev');
+      if (slideIndex === activeIndex) {
+        slide.classList.add('active');
+      } else if (slideIndex < activeIndex) {
+        slide.classList.add('prev');
+      }
+    });
+
+    dots.forEach((dot, dotIndex) => {
+      if (dotIndex === activeIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  };
+
+  const nextTestimonialSlide = () => {
+    const nextIndex = (currentTestimonialSlideIndex + 1) % totalTestimonialSlides;
+    currentTestimonialSlide(nextIndex + 1);
   };
 
   // Email validation function
@@ -2310,61 +2358,79 @@ export default function HomePage() {
               mathematics
             </p>
           </div>
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="testimonial-text">
-                hi mr wu, wanted to thank you for all the help with math!
-                managed to get an A for H1 math 😊 everything else was alright!
-              </div>
-              <div className="testimonial-author">
-                <div className="author-avatar">
-                  <img
-                    src="/images/schools/ri-logo.png"
-                    alt="Raffles Institution"
-                    className="school-logo"
-                  />
-                </div>
-                <div className="author-info">
-                  <h4>JX</h4>
-                  <p>RI</p>
+
+          <div className="testimonials-content">
+            <div className="teacher-photo">
+              <div className="teacher-photo-wrapper">
+                <img src="/images/mrwu/success.png" alt="Mr Wu - Mathematics Success" />
+                <div className="teacher-info">
+                  <h3>Mr Wu</h3>
+                  <p>Mathematics Educator</p>
+                  <p>Proven Track Record</p>
                 </div>
               </div>
             </div>
-            <div className="testimonial-card">
-              <div className="testimonial-text">
-                HI MR WU I GOT 90RP THANK U!!!!! HOORAY
+
+            <div className="testimonials-carousel">
+              <div className="carousel-container">
+                <div className="testimonial-slide active">
+                  <p>"hi mr wu, wanted to thank you for all the help with math!
+                  managed to <strong>get an A for H1 math 😊</strong> everything else was alright!"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/ri-logo.png"
+                        alt="Raffles Institution"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>JX</h4>
+                      <p>RI</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>"HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/ejc-logo.png"
+                        alt="Eunoia Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>Z</h4>
+                      <p>EJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>"Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so much for all your
+                  help and guidance!! 🙏🙏🫶🫶"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/sajc-logo.png"
+                        alt="Saint Andrew's Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>V</h4>
+                      <p>SAJC</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="testimonial-author">
-                <div className="author-avatar">
-                  <img
-                    src="/images/schools/ejc-logo.png"
-                    alt="Eunoia Junior College"
-                    className="school-logo"
-                  />
-                </div>
-                <div className="author-info">
-                  <h4>Z</h4>
-                  <p>EJC</p>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <div className="testimonial-text">
-                Hi Mr Wu! I got A for Maths!! Thank you so much for all your
-                help and guidance!! 🙏🙏🫶🫶
-              </div>
-              <div className="testimonial-author">
-                <div className="author-avatar">
-                  <img
-                    src="/images/schools/sajc-logo.png"
-                    alt="Saint Andrew's Junior College"
-                    className="school-logo"
-                  />
-                </div>
-                <div className="author-info">
-                  <h4>V</h4>
-                  <p>SAJC</p>
-                </div>
+
+              <div className="carousel-dots">
+                <span className="dot active" onClick={() => currentTestimonialSlide(1)}></span>
+                <span className="dot" onClick={() => currentTestimonialSlide(2)}></span>
+                <span className="dot" onClick={() => currentTestimonialSlide(3)}></span>
               </div>
             </div>
           </div>
