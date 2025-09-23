@@ -663,7 +663,8 @@ export default function HomePage() {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center bottom;
     z-index: 1;
 }
 
@@ -711,13 +712,14 @@ export default function HomePage() {
     color: white !important;
 }
         .hero {
-            min-height: 100vh;
+            width: 100%;
+            aspect-ratio: 16/6.75;
             display: flex;
             align-items: center;
             background: linear-gradient(135deg, #f8fafc 0%, #e1f5fe 50%, #fff9c4 100%);
             position: relative;
             overflow: hidden;
-            padding-top: 80px;
+            padding-top: 0;
         }
 
         .hero::before {
@@ -738,15 +740,16 @@ export default function HomePage() {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
-            align-items: start;
+            align-items: center;
             position: relative;
             z-index: 3;
+            height: 100%;
         }
 
         .hero-content {
             animation: slideInLeft 1s ease-out;
-            align-self: flex-start;
-            padding-top: 2rem;
+            align-self: center;
+            padding-top: 0;
         }
 
         .hero h1 {
@@ -754,10 +757,8 @@ export default function HomePage() {
             font-weight: 800;
             margin-bottom: 1.5rem;
             line-height: 1.1;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .hero p {
@@ -771,7 +772,7 @@ export default function HomePage() {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-top: 8rem;
+            margin-top: 2rem;
         }
 
         .btn-primary {
@@ -782,7 +783,7 @@ export default function HomePage() {
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+            box-shadow: 0 8px 30px rgba(245, 200, 66, 0.6);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -790,7 +791,7 @@ export default function HomePage() {
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4);
+            box-shadow: 0 15px 40px rgba(245, 200, 66, 0.7);
         }
 
         .btn-secondary {
@@ -813,9 +814,9 @@ export default function HomePage() {
         .hero-visual {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             animation: slideInRight 1s ease-out;
-            padding-top: 2rem;
+            padding-top: 0;
         }
 
         .floating-cards {
@@ -1493,6 +1494,11 @@ export default function HomePage() {
             }
         }
 
+        /* Hide mobile content on desktop */
+        .mobile-hero-content {
+            display: none;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -1508,23 +1514,31 @@ export default function HomePage() {
                 font-size: 0.85rem;
             }
 
-
+            /* Hide all content overlays on mobile */
             .hero.has-video .floating-cards {
-                display: none; /* Keep cards hidden on mobile when video exists */
+                display: none;
             }
 
             .hero.has-video .video-overlay-content {
-                display: block; /* Keep video overlay content visible on mobile */
+                display: none;
+            }
+
+            /* Hide hero content during video playback on mobile */
+            .hero.has-video .hero-content {
+                display: none;
             }
 
             .hero-container {
                 grid-template-columns: 1fr;
                 text-align: center;
                 gap: 2rem;
+                position: relative;
             }
 
             .hero {
-                padding-top: 100px;
+                aspect-ratio: 16/6.75;
+                margin-top: 80px;
+                position: relative;
             }
 
             .hero h1 {
@@ -1545,6 +1559,45 @@ export default function HomePage() {
                 flex-direction: column;
                 align-items: center;
                 gap: 0.8rem;
+            }
+
+            /* Mobile content below video */
+            .mobile-hero-content {
+                display: block;
+                background: linear-gradient(135deg, #f8fafc 0%, #e1f5fe 100%);
+                padding: 2rem 1rem;
+                text-align: center;
+                box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .mobile-hero-content h1 {
+                font-size: 2rem;
+                font-weight: 800;
+                margin-bottom: 1rem;
+                color: var(--dark-gray);
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .mobile-hero-content .hero-stats {
+                font-size: 1rem;
+                color: var(--medium-gray);
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-hero-content .hero-location {
+                font-size: 0.9rem;
+                color: var(--medium-gray);
+                margin-bottom: 2rem;
+            }
+
+            .mobile-hero-content .hero-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
             }
 
             .contact-container {
@@ -2030,13 +2083,10 @@ export default function HomePage() {
 
         <div className="hero-container">
           <div className="hero-content">
-            <h1>Master Mathematics with Expert Guidance</h1>
+            <h1>A-Level JC H2 Math Tuition</h1>
             <div className="hero-buttons">
               <a href="#contact" className="btn-primary">
                 Book a Trial Lesson
-              </a>
-              <a href="#services" className="btn-secondary">
-                View Programmes
               </a>
             </div>
           </div>
@@ -2060,10 +2110,234 @@ export default function HomePage() {
 
             {/* Alternative content when video is active */}
             <div className="video-overlay-content">
-              <h3>Excellence in Mathematics</h3>
-              <p>Join hundreds of successful students</p>
+              <h3>JC H2 Math Tuition | A-Level Math Tuition</h3>
+              <p>300+ Students • 75% A Rate</p>
               <div className="video-stats">
-                <span>300+ Students</span> • <span>75% A Rate</span>
+                <span>5 min walk from Kovan MRT<br/>(a few doors down Lola Cafe)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile Hero Content - shown below video on mobile */}
+      <div className="mobile-hero-content">
+        <h1>A-Level JC H2 Math Tuition</h1>
+        <div className="hero-stats">300+ Students • 75% A Rate</div>
+        <div className="hero-location">
+          5 min walk from Kovan MRT<br />
+          (a few doors down Lola Cafe)
+        </div>
+        <div className="hero-buttons">
+          <a href="#contact" className="btn-primary">
+            Book a Trial Lesson
+          </a>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="testimonials">
+        <div className="testimonials-container">
+          <div className="section-header">
+            <h2>Student Success Stories</h2>
+            <p>
+              Real results from students who've achieved excellence in
+              mathematics
+            </p>
+          </div>
+
+          <div className="testimonials-content">
+            <div className="teacher-photo">
+              <div className="teacher-photo-wrapper">
+                <img
+                  src="/images/mrwu/success.png"
+                  alt="Mr Wu - Mathematics Success"
+                />
+                <div className="teacher-info">
+                  <h3>Mr Wu</h3>
+                  <p>Mathematics Educator</p>
+                  <p>Proven Track Record</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonials-carousel">
+              <div className="carousel-container">
+                <div className="testimonial-slide active">
+                  <p>
+                    "hi mr wu, wanted to thank you for all the help with math!
+                    managed to <strong>get an A for H1 math 😊</strong>{" "}
+                    everything else was alright!"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/ri-logo.png"
+                        alt="Raffles Institution"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>JX</h4>
+                      <p>RI</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/ejc-logo.png"
+                        alt="Eunoia Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>Z</h4>
+                      <p>EJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
+                    much for all your help and guidance!! 🙏🙏🫶🫶"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/sajc-logo.png"
+                        alt="Saint Andrew's Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>V</h4>
+                      <p>SAJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "OMG Mr Wu!! <strong>I actually got B for H2 Math</strong>{" "}
+                    😭✨ was literally failing everything before joining your
+                    class lol. Thanks for not giving up on me even when I kept
+                    asking the same questions 😅💯"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/tmjc-logo.png"
+                        alt="Tampines Meridian Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>K</h4>
+                      <p>TMJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "Mr Wu is literally the GOAT 🐐✨ went from{" "}
+                    <strong>barely passing to getting A</strong> for A levels!!
+                    His explanations just hit different fr 🔥 highly recommend
+                    if you're struggling with math 📈💪"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/asrjc-logo.png"
+                        alt="Anderson Serangoon Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>M</h4>
+                      <p>ASRJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "no cap Mr Wu saved my math grade 💯 was getting straight Us
+                    before his class 😭
+                    <strong>I got a B!</strong> tysm 🥺✨"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/sajc-logo.png"
+                        alt="Saint Andrew's Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>K</h4>
+                      <p>SAJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <p>
+                    "Mr Wu is such a vibe!! 😎 makes math actually fun ngl 😂
+                    went from <strong>S to B for H2 math</strong>"
+                  </p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/nyjc-logo.png"
+                        alt="Nanyang Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>A</h4>
+                      <p>NYJC</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="carousel-dots">
+                <span
+                  className="dot active"
+                  onClick={() => currentTestimonialSlide(1)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(2)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(3)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(4)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(5)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(6)}
+                ></span>
+                <span
+                  className="dot"
+                  onClick={() => currentTestimonialSlide(7)}
+                ></span>
               </div>
             </div>
           </div>
@@ -2474,215 +2748,6 @@ export default function HomePage() {
                   </ul>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="testimonials">
-        <div className="testimonials-container">
-          <div className="section-header">
-            <h2>Student Success Stories</h2>
-            <p>
-              Real results from students who've achieved excellence in
-              mathematics
-            </p>
-          </div>
-
-          <div className="testimonials-content">
-            <div className="teacher-photo">
-              <div className="teacher-photo-wrapper">
-                <img
-                  src="/images/mrwu/success.png"
-                  alt="Mr Wu - Mathematics Success"
-                />
-                <div className="teacher-info">
-                  <h3>Mr Wu</h3>
-                  <p>Mathematics Educator</p>
-                  <p>Proven Track Record</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="testimonials-carousel">
-              <div className="carousel-container">
-                <div className="testimonial-slide active">
-                  <p>
-                    "hi mr wu, wanted to thank you for all the help with math!
-                    managed to <strong>get an A for H1 math 😊</strong>{" "}
-                    everything else was alright!"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/ri-logo.png"
-                        alt="Raffles Institution"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>JX</h4>
-                      <p>RI</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/ejc-logo.png"
-                        alt="Eunoia Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>Z</h4>
-                      <p>EJC</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
-                    much for all your help and guidance!! 🙏🙏🫶🫶"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/sajc-logo.png"
-                        alt="Saint Andrew's Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>V</h4>
-                      <p>SAJC</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "OMG Mr Wu!! <strong>I actually got B for H2 Math</strong>{" "}
-                    😭✨ was literally failing everything before joining your
-                    class lol. Thanks for not giving up on me even when I kept
-                    asking the same questions 😅💯"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/tmjc-logo.png"
-                        alt="Tampines Meridian Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>K</h4>
-                      <p>TMJC</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "Mr Wu is literally the GOAT 🐐✨ went from{" "}
-                    <strong>barely passing to getting A</strong> for A levels!!
-                    His explanations just hit different fr 🔥 highly recommend
-                    if you're struggling with math 📈💪"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/asrjc-logo.png"
-                        alt="Anderson Serangoon Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>M</h4>
-                      <p>ASRJC</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "no cap Mr Wu saved my math grade 💯 was getting straight Us
-                    before his class 😭
-                    <strong>I got a B!</strong> tysm 🥺✨"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/sajc-logo.png"
-                        alt="Saint Andrew's Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>K</h4>
-                      <p>SAJC</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <p>
-                    "Mr Wu is such a vibe!! 😎 makes math actually fun ngl 😂
-                    went from <strong>S to B for H2 math</strong>"
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/nyjc-logo.png"
-                        alt="Nanyang Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>A</h4>
-                      <p>NYJC</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="carousel-dots">
-                <span
-                  className="dot active"
-                  onClick={() => currentTestimonialSlide(1)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(2)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(3)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(4)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(5)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(6)}
-                ></span>
-                <span
-                  className="dot"
-                  onClick={() => currentTestimonialSlide(7)}
-                ></span>
-              </div>
             </div>
           </div>
         </div>
