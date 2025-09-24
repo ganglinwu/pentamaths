@@ -39,6 +39,19 @@ export default function RootLayout({
 
         {/* Google reCAPTCHA Enterprise Script */}
         <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldq8NArAAAAADRscCMvQQuQN_uSSrPsHy1UEWy5"></script>
+
+        {/* Google Analytics (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-R16YX7WVHV"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-R16YX7WVHV');
+            `,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
