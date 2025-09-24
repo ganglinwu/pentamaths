@@ -2620,27 +2620,27 @@ export default function HomePage() {
                   <div className="video-slide">
                     <div className="video-wrapper">
                       <iframe
-                        src="https://www.youtube.com/embed/q2C9vl9hU9U"
-                        title="Vectors Teaching"
+                        src="https://www.youtube.com/embed/bokhYBCU34Q"
+                        title="Integration: Solids of Revolution"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       ></iframe>
                     </div>
-                    <p className="video-label">Vectors</p>
+                    <p className="video-label">Integration: Solids of Revolution</p>
                   </div>
 
                   <div className="video-slide">
                     <div className="video-wrapper">
                       <iframe
-                        src="https://www.youtube.com/embed/b3QN-k285Ak"
-                        title="Hypothesis Testing Teaching"
+                        src="https://www.youtube.com/embed/lyUwFZkNaZg"
+                        title="Integration: why is area negative?"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       ></iframe>
                     </div>
-                    <p className="video-label">Hypothesis Testing</p>
+                    <p className="video-label">Integration: why is area negative?</p>
                   </div>
 
                   <div className="video-slide">
