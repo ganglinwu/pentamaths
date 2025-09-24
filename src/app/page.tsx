@@ -549,6 +549,11 @@ export default function HomePage() {
           throw new Error("Failed to send message");
         }
 
+        // Track successful conversion only after legitimate form submission
+        if (typeof window !== 'undefined' && (window as any).gtag_report_conversion) {
+          (window as any).gtag_report_conversion();
+        }
+
         alert("Thank you for your message! We'll get back to you soon.");
       }
 

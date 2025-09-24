@@ -49,6 +49,16 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'G-R16YX7WVHV');
+
+              // Google Ads Conversion Tracking - Only fires on successful form submission
+              function gtag_report_conversion() {
+                gtag('event', 'conversion', {
+                  'send_to': 'AW-959614159/UZLgCPequZEYEM-ZyskD',
+                  'value': 1.0,
+                  'currency': 'SGD'
+                });
+                console.log('Conversion tracked: Contact form submission');
+              }
             `,
           }}
         />
