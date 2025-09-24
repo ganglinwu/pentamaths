@@ -2262,10 +2262,10 @@ export default function HomePage() {
               <a href="#testimonials">Reviews</a>
             </li>
             <li>
-              <a href="#contact">Contact</a>
+              <a href="#trial">Contact</a>
             </li>
           </ul>
-          <a href="#contact" className="cta-button">
+          <a href="#trial" className="cta-button">
             <span className="cta-desktop">Get Started</span>
             <span className="cta-mobile">Book Trial</span>
           </a>
@@ -2296,7 +2296,7 @@ export default function HomePage() {
           <div className="hero-content">
             <h1>A-Level JC H2 Math Tuition</h1>
             <div className="hero-buttons">
-              <a href="#contact" className="btn-primary">
+              <a href="#trial" className="btn-primary">
                 Book a Trial Lesson
               </a>
             </div>
@@ -2340,7 +2340,7 @@ export default function HomePage() {
           (a few doors down Lola Cafe)
         </div>
         <div className="hero-buttons">
-          <a href="#contact" className="btn-primary">
+          <a href="#trial" className="btn-primary">
             Book a Trial Lesson
           </a>
         </div>
@@ -2851,7 +2851,7 @@ export default function HomePage() {
           </div>
 
           <div className="testimonials-cta">
-            <a href="#contact" className="btn-primary testimonials-trial-btn">
+            <a href="#trial" className="btn-primary testimonials-trial-btn">
               Book Your Trial Lesson Today
             </a>
           </div>
@@ -2981,7 +2981,7 @@ export default function HomePage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="contact">
+      <section id="trial" className="contact">
         <div className="contact-container">
           <div className="contact-info">
             <h2>Ready to Excel in Mathematics?</h2>
