@@ -2592,7 +2592,7 @@ export default function HomePage() {
       </section>
 
       {/* About the Educator Section */}
-      <section className="about-educator">
+      <section id="teaching-style" className="about-educator">
         <div className="about-educator-container">
           <div className="section-header">
             <h2>Hi, I'm Mr Wu!</h2>
