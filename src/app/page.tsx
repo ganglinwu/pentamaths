@@ -97,6 +97,7 @@ export default function HomePage() {
     "h2-math": false,
     "teaching-options": false,
   });
+  const [selectedTimeSlots, setSelectedTimeSlots] = useState<string[]>([]);
 
   // Form state for spam protection
   const [formData, setFormData] = useState({
@@ -198,6 +199,56 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Time slot selection functionality
+  const handleTimeSlotClick = (timeSlot: string) => {
+    setSelectedTimeSlots((prev) => {
+      if (prev.includes(timeSlot)) {
+        // Remove if already selected
+        return prev.filter((slot) => slot !== timeSlot);
+      } else {
+        // Determine which cohort this slot belongs to
+        const isJC2025 = timeSlot.includes('JC1 2025');
+        const isJC2026 = timeSlot.includes('JC1 2026');
+
+        // Filter out slots from the other cohort when selecting a new one
+        const filteredPrev = prev.filter((slot) => {
+          if (isJC2025) return slot.includes('JC1 2025');
+          if (isJC2026) return slot.includes('JC1 2026');
+          return true;
+        });
+
+        // Add the new slot
+        return [...filteredPrev, timeSlot];
+      }
+    });
+  };
+
+  // Generate WhatsApp message with selected time slots
+  const generateWhatsAppMessage = () => {
+    const baseMessage =
+      "Hi! I'm interested in group discounts for H2 Math tuition. Can you tell me more about the savings when attending with friends?";
+
+    if (selectedTimeSlots.length > 0) {
+      const selectedSlots = selectedTimeSlots.join(", ");
+      return `${baseMessage} We're interested in these time slots: ${selectedSlots}`;
+    }
+
+    return baseMessage;
+  };
+
+  // Generate H2 Math schedule inquiry message with selected time slots
+  const generateH2MathScheduleMessage = () => {
+    const baseMessage = "Hi! I'm interested in H2 Math tuition but need information about different time slots or availability. Could you help me find a suitable schedule?";
+
+    if (selectedTimeSlots.length > 0) {
+      const selectedSlots = selectedTimeSlots.join(", ");
+      const cohort = selectedTimeSlots[0].includes('JC1 2025') ? 'JC1 2025' : 'JC1 2026';
+      return `${baseMessage} I'm interested in the ${cohort} cohort but the current times (${selectedSlots}) don't work for me. Do you have alternative timings or future batches available?`;
+    }
+
+    return baseMessage;
+  };
+
   useEffect(() => {
     // Update slide visibility and dots with sliding animation for testimonials-revamped ONLY
     const slides = document.querySelectorAll(
@@ -228,7 +279,7 @@ export default function HomePage() {
   const totalVideos = 3;
 
   const getMaxVideoIndex = () => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
     return isMobile ? totalVideos - 1 : 1; // Mobile: show 1 video (max index 2), Desktop: show 2 videos (max index 1)
   };
 
@@ -321,38 +372,38 @@ export default function HomePage() {
     const handleServicesHeaderClick = () => {
       const isMobile = window.innerWidth <= 768;
       if (isMobile) {
-        const servicesSection = document.querySelector('.services');
+        const servicesSection = document.querySelector(".services");
         if (servicesSection) {
-          servicesSection.classList.toggle('expanded');
-          servicesSection.classList.toggle('collapsed');
+          servicesSection.classList.toggle("expanded");
+          servicesSection.classList.toggle("collapsed");
         }
       }
     };
 
-    const servicesHeader = document.querySelector('.services .section-header');
+    const servicesHeader = document.querySelector(".services .section-header");
     if (servicesHeader) {
-      servicesHeader.addEventListener('click', handleServicesHeaderClick);
+      servicesHeader.addEventListener("click", handleServicesHeaderClick);
     }
 
     // Initialize as collapsed on mobile
     const checkAndInitialize = () => {
       const isMobile = window.innerWidth <= 768;
-      const servicesSection = document.querySelector('.services');
+      const servicesSection = document.querySelector(".services");
       if (isMobile && servicesSection) {
-        servicesSection.classList.add('collapsed');
+        servicesSection.classList.add("collapsed");
       } else if (servicesSection) {
-        servicesSection.classList.add('expanded');
+        servicesSection.classList.add("expanded");
       }
     };
 
     checkAndInitialize();
-    window.addEventListener('resize', checkAndInitialize);
+    window.addEventListener("resize", checkAndInitialize);
 
     return () => {
       if (servicesHeader) {
-        servicesHeader.removeEventListener('click', handleServicesHeaderClick);
+        servicesHeader.removeEventListener("click", handleServicesHeaderClick);
       }
-      window.removeEventListener('resize', checkAndInitialize);
+      window.removeEventListener("resize", checkAndInitialize);
     };
   }, []);
 
@@ -550,7 +601,10 @@ export default function HomePage() {
         }
 
         // Track successful conversion only after legitimate form submission
-        if (typeof window !== 'undefined' && (window as any).gtag_report_conversion) {
+        if (
+          typeof window !== "undefined" &&
+          (window as any).gtag_report_conversion
+        ) {
           (window as any).gtag_report_conversion();
         }
 
@@ -1424,6 +1478,385 @@ export default function HomePage() {
     font-size: 0.9rem;
 }
 
+        /* Schedule Section */
+        .schedule {
+            background: white;
+            padding: 6rem 0;
+        }
+
+        .schedule-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(245, 200, 66, 0.1);
+        }
+
+        .schedule-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark-gray);
+        }
+
+        .time-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .day-slot h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .time-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .time-slot {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .time-slot.available {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .time-slot.limited {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #f57c00;
+        }
+
+        .time-slot.h2-math {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        .time-slot.catchup {
+            background: #fce4ec;
+            border-color: #e91e63;
+            color: #ad1457;
+        }
+
+        .time-slot {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-slot.selected {
+            background: #4caf50 !important;
+            border-color: #388e3c !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .class-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .option-icon {
+            font-size: 1.5rem;
+            margin-top: 0.2rem;
+        }
+
+        .option-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+        }
+
+        .option-content p {
+            color: var(--medium-gray);
+            font-size: 0.95rem;
+        }
+
+        .schedule-notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .schedule-note-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(245, 200, 66, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .schedule-note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .note-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .schedule-note-card h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        .schedule-note-card p {
+            color: var(--medium-gray);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .note-cta-link {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .note-cta-link:hover {
+            background: #e6b800;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 200, 66, 0.3);
+        }
+
+        .class-description {
+            font-size: 0.85rem;
+            color: var(--medium-gray);
+            margin-top: 0.8rem;
+            font-style: italic;
+        }
+
+        .h2-color {
+            color: #1565c0;
+            font-weight: 600;
+        }
+
+        .catchup-color {
+            color: #ad1457;
+            font-weight: 600;
+        }
+
+        .whatsapp-link {
+            color: #25d366;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-link:hover {
+            color: #128c7e;
+            text-decoration: underline;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background: var(--light-gray);
+            padding: 6rem 0;
+        }
+
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(245, 200, 66, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        .price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.2rem;
+        }
+
+        .currency {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .period {
+            font-size: 1rem;
+            color: var(--medium-gray);
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pricing-features li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: var(--dark-gray);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+
+        .pricing-cta {
+            text-align: center;
+        }
+
+        .group-discount-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .discount-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .group-discount-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .group-discount-card p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
         /* Contact Section */
         .contact {
             background: var(--gradient-primary);
@@ -1754,7 +2187,9 @@ export default function HomePage() {
             .services,
             .contact,
             .cta-section,
-            .testimonials {
+            .testimonials,
+            .schedule,
+            .pricing {
                 padding-top: 2rem;
                 padding-bottom: 2rem;
             }
@@ -1821,6 +2256,84 @@ export default function HomePage() {
 
             .floating-card {
                 width: 150px !important;
+            }
+
+            /* Schedule Section Mobile */
+            .schedule-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .schedule-card {
+                padding: 1.5rem;
+            }
+
+            .time-options {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .time-slot {
+                text-align: center;
+                padding: 0.8rem;
+            }
+
+            .class-description {
+                font-size: 0.8rem;
+                margin-top: 0.5rem;
+                text-align: center;
+            }
+
+            /* Schedule Notes Mobile */
+            .schedule-notes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .schedule-note-card {
+                padding: 1.5rem;
+            }
+
+            .note-icon {
+                font-size: 2rem;
+            }
+
+            .schedule-note-card h4 {
+                font-size: 1.2rem;
+            }
+
+            /* Pricing Section Mobile */
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+                order: -1;
+            }
+
+            .pricing-card {
+                padding: 2rem;
+            }
+
+            .amount {
+                font-size: 2.5rem;
+            }
+
+            .group-discount-card {
+                padding: 2rem;
+                margin-top: 2rem;
+            }
+
+            .group-discount-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .group-discount-card p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
             }
 
             .testimonials-content {
@@ -2261,10 +2774,19 @@ export default function HomePage() {
               <a href="#home">Home</a>
             </li>
             <li>
+              <a href="#testimonials">Reviews</a>
+            </li>
+            <li>
+              <a href="#teaching-style">About</a>
+            </li>
+            <li>
               <a href="#services">Programmes</a>
             </li>
             <li>
-              <a href="#testimonials">Reviews</a>
+              <a href="#schedule">Schedule</a>
+            </li>
+            <li>
+              <a href="#pricing">Pricing</a>
             </li>
             <li>
               <a href="#trial">Contact</a>
@@ -2329,7 +2851,11 @@ export default function HomePage() {
               <h3>JC H2 Math Tuition | A-Level Math Tuition</h3>
               <p>300+ Students • 75% A Rate</p>
               <div className="video-stats">
-                <span>5 min walk from Kovan MRT<br/>(a few doors down Lola Cafe)</span>
+                <span>
+                  5 min walk from Kovan MRT
+                  <br />
+                  (a few doors down Lola Cafe)
+                </span>
               </div>
             </div>
           </div>
@@ -2341,7 +2867,8 @@ export default function HomePage() {
         <h1>A-Level JC H2 Math Tuition</h1>
         <div className="hero-stats">300+ Students • 75% A Rate</div>
         <div className="hero-location">
-          5 min walk from Kovan MRT<br />
+          5 min walk from Kovan MRT
+          <br />
           (a few doors down Lola Cafe)
         </div>
         <div className="hero-buttons">
@@ -2426,8 +2953,8 @@ export default function HomePage() {
                 <div className="testimonial-slide">
                   <div className="testimonial-content">
                     <p>
-                      "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you so
-                      much for all your help and guidance!! 🙏🙏🫶🫶"
+                      "Hi Mr Wu! <strong>I got A for Maths!!</strong> Thank you
+                      so much for all your help and guidance!! 🙏🙏🫶🫶"
                     </p>
                   </div>
                   <div className="testimonial-author">
@@ -2473,9 +3000,9 @@ export default function HomePage() {
                   <div className="testimonial-content">
                     <p>
                       "Mr Wu is literally the GOAT 🐐✨ went from{" "}
-                      <strong>barely passing to getting A</strong> for A levels!!
-                      His explanations just hit different fr 🔥 highly recommend
-                      if you're struggling with math 📈💪"
+                      <strong>barely passing to getting A</strong> for A
+                      levels!! His explanations just hit different fr 🔥 highly
+                      recommend if you're struggling with math 📈💪"
                     </p>
                   </div>
                   <div className="testimonial-author">
@@ -2496,8 +3023,8 @@ export default function HomePage() {
                 <div className="testimonial-slide">
                   <div className="testimonial-content">
                     <p>
-                      "no cap Mr Wu saved my math grade 💯 was getting straight Us
-                      before his class 😭
+                      "no cap Mr Wu saved my math grade 💯 was getting straight
+                      Us before his class 😭
                       <strong>I got a B!</strong> tysm 🥺✨"
                     </p>
                   </div>
@@ -2632,7 +3159,9 @@ export default function HomePage() {
                         allowFullScreen
                       ></iframe>
                     </div>
-                    <p className="video-label">Integration: Solids of Revolution</p>
+                    <p className="video-label">
+                      Integration: Solids of Revolution
+                    </p>
                   </div>
 
                   <div className="video-slide">
@@ -2645,7 +3174,9 @@ export default function HomePage() {
                         allowFullScreen
                       ></iframe>
                     </div>
-                    <p className="video-label">Integration: why is area negative?</p>
+                    <p className="video-label">
+                      Integration: why is area negative?
+                    </p>
                   </div>
 
                   <div className="video-slide">
@@ -2673,7 +3204,10 @@ export default function HomePage() {
               <div className="video-indicators">
                 <span className="video-indicator active" data-slide="0"></span>
                 <span className="video-indicator" data-slide="1"></span>
-                <span className="video-indicator mobile-only" data-slide="2"></span>
+                <span
+                  className="video-indicator mobile-only"
+                  data-slide="2"
+                ></span>
               </div>
             </div>
           </div>
@@ -2863,7 +3397,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* Services Section */}
       <section id="services" className="services">
         <div className="services-container">
@@ -2980,6 +3513,255 @@ export default function HomePage() {
                   </ul>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Schedule Section */}
+      <section id="schedule" className="schedule">
+        <div className="schedule-container">
+          <div className="section-header">
+            <h2>H2 Math Tuition Class Schedule</h2>
+            <p>
+              Choose from our available time slots for both individual and group
+              sessions
+            </p>
+          </div>
+          <div className="schedule-grid">
+            <div className="schedule-card">
+              <h3>📅 Weekly Schedule JC1 2025</h3>
+              <div className="time-slots">
+                <div className="day-slot">
+                  <h4>Monday - Catch Up Class</h4>
+                  <div className="time-options">
+                    <span
+                      className={`time-slot available catchup ${selectedTimeSlots.includes("JC1 2025 Monday 6:00 PM - 8:00 PM (Catch Up)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2025 Monday 6:00 PM - 8:00 PM (Catch Up)",
+                        )
+                      }
+                    >
+                      6:00 PM - 8:00 PM
+                    </span>
+                  </div>
+                  <p className="class-description">
+                    J1 Pure Topics comprehensive revision
+                  </p>
+                </div>
+                <div className="day-slot">
+                  <h4>Thursday - Catch Up Class</h4>
+                  <div className="time-options">
+                    <span
+                      className={`time-slot available catchup ${selectedTimeSlots.includes("JC1 2025 Thursday 4:00 PM - 6:00 PM (Catch Up)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2025 Thursday 4:00 PM - 6:00 PM (Catch Up)",
+                        )
+                      }
+                    >
+                      4:00 PM - 6:00 PM
+                    </span>
+                  </div>
+                  <p className="class-description">
+                    J1 Pure Topics comprehensive revision
+                  </p>
+                </div>
+                <div className="day-slot">
+                  <h4>Saturday</h4>
+                  <div className="time-options">
+                    <span
+                      className={`time-slot available h2-math ${selectedTimeSlots.includes("JC1 2025 Saturday 11:00 AM - 1:00 PM (H2 Math)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2025 Saturday 11:00 AM - 1:00 PM (H2 Math)",
+                        )
+                      }
+                    >
+                      11:00 AM - 1:00 PM
+                    </span>
+                    <span
+                      className={`time-slot available h2-math ${selectedTimeSlots.includes("JC1 2025 Saturday 4:00 PM - 6:00 PM (H2 Math)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2025 Saturday 4:00 PM - 6:00 PM (H2 Math)",
+                        )
+                      }
+                    >
+                      4:00 PM - 6:00 PM
+                    </span>
+                  </div>
+                  <p className="class-description">
+                    Keep up with school syllabus
+                  </p>
+                </div>
+                <div className="day-slot">
+                  <p className="class-description">
+                    <span className="h2-color">■ H2 Math Tuition</span> |
+                    <span className="catchup-color">■ Catch Up Class</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="schedule-card">
+              <h3>📅 Weekly Schedule JC1 2026</h3>
+              <div className="time-slots">
+                <div className="day-slot">
+                  <h4>Tuesday - Catch Up Class</h4>
+                  <div className="time-options">
+                    <span
+                      className={`time-slot available catchup ${selectedTimeSlots.includes("JC1 2026 Tuesday 6:00 PM - 8:00 PM (Catch Up)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2026 Tuesday 6:00 PM - 8:00 PM (Catch Up)",
+                        )
+                      }
+                    >
+                      6:00 PM - 8:00 PM
+                    </span>
+                  </div>
+                  <p className="class-description">
+                    J1 Pure Topics comprehensive revision
+                  </p>
+                </div>
+                <div className="day-slot">
+                  <h4>Saturday - H2 Math Tuition</h4>
+                  <div className="time-options">
+                    <span
+                      className={`time-slot available h2-math ${selectedTimeSlots.includes("JC1 2026 Saturday 8:00 AM - 10:00 AM (H2 Math)") ? "selected" : ""}`}
+                      onClick={() =>
+                        handleTimeSlotClick(
+                          "JC1 2026 Saturday 8:00 AM - 10:00 AM (H2 Math)",
+                        )
+                      }
+                    >
+                      8:00 AM - 10:00 AM
+                    </span>
+                  </div>
+                  <p className="class-description">
+                    Keep up with school syllabus
+                  </p>
+                </div>
+                <div className="day-slot">
+                  <p className="class-description">
+                    <span className="h2-color">■ H2 Math Tuition</span> |
+                    <span className="catchup-color">■ Catch Up Class</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="schedule-notes-grid">
+            <div className="schedule-note-card">
+              <div className="note-icon">📞</div>
+              <h4>A Maths Tuition Available</h4>
+              <p>Additional Mathematics classes for Secondary students</p>
+              <a href="https://wa.me/6583493435?text=Hi!%20I'm%20interested%20in%20A%20Maths%20tuition.%20Could%20you%20please%20tell%20me%20more%20about%20the%20available%20time%20slots%20and%20pricing?"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="note-cta-link">
+                WhatsApp us to enquire!
+              </a>
+            </div>
+            <div className="schedule-note-card">
+              <div className="note-icon">📅</div>
+              <h4>H2 Math Schedule Inquiry</h4>
+              <p>Need different timings or future cohort information?</p>
+              <a href={`https://wa.me/6583493435?text=${encodeURIComponent(generateH2MathScheduleMessage())}`}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="note-cta-link">
+                Ask about other timings
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="pricing">
+        <div className="pricing-container">
+          <div className="section-header">
+            <h2>Pricing Plans</h2>
+            <p>
+              Transparent pricing with no hidden fees, deposits or upfront
+              payment to lock you down!
+            </p>
+          </div>
+          <div className="pricing-grid">
+            <div className="pricing-card">
+              <div className="pricing-header">
+                <h3>H2 Math Tuition</h3>
+                <div className="price">
+                  <span className="currency">S$</span>
+                  <span className="amount">430</span>
+                  <span className="period">/month</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>✓ 2 hours per week</li>
+                <li>✓ Stay on track with current school syllabus</li>
+                <li>✓ Online Lesson Available</li>
+                <li>✓ Homework support</li>
+              </ul>
+            </div>
+            <div className="pricing-card featured">
+              <div className="pricing-badge">Most Popular</div>
+              <div className="pricing-header">
+                <h3>H2 Math Tuition + Catch Up Class</h3>
+                <div className="price">
+                  <span className="currency">S$</span>
+                  <span className="amount">570</span>
+                  <span className="period">/month</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>
+                  ✓ <strong>4 hours per week</strong>
+                </li>
+                <li>
+                  ✓ Double protection: Fill your knowledge gaps AND keep up with
+                  school
+                </li>
+                <li>✓ S$290 savings vs taking both classes separately</li>
+                <li>✓ Free materials included</li>
+                <li>✓ Access to Recorded Lessons</li>
+              </ul>
+            </div>
+            <div className="pricing-card">
+              <div className="pricing-header">
+                <h3>Catch Up Class</h3>
+                <div className="price">
+                  <span className="currency">S$</span>
+                  <span className="amount">430</span>
+                  <span className="period">/month</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>✓ 2 hours per week</li>
+                <li>✓ Fill the gaps from J1 that still confuse you</li>
+                <li>✓ Online Lesson Available</li>
+                <li>✓ Homework support</li>
+              </ul>
+            </div>
+          </div>
+          <div className="group-discount-card">
+            <div className="discount-icon">👥</div>
+            <h3>Bring a Friend & Save Even More!</h3>
+            <p>
+              Additional discounts available when you attend classes with
+              friends. The more friends you bring, the more everyone saves!
+            </p>
+            <div className="discount-cta">
+              <a
+                href={`https://wa.me/6583493435?text=${encodeURIComponent(generateWhatsAppMessage())}`}
+                className="btn-secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ask About Group Discounts
+              </a>
             </div>
           </div>
         </div>
