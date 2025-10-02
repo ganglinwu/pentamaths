@@ -208,13 +208,13 @@ export default function HomePage() {
         return prev.filter((slot) => slot !== timeSlot);
       } else {
         // Determine which cohort this slot belongs to
-        const isJC2025 = timeSlot.includes('JC1 2025');
-        const isJC2026 = timeSlot.includes('JC1 2026');
+        const isJC2025 = timeSlot.includes("JC1 2025");
+        const isJC2026 = timeSlot.includes("JC1 2026");
 
         // Filter out slots from the other cohort when selecting a new one
         const filteredPrev = prev.filter((slot) => {
-          if (isJC2025) return slot.includes('JC1 2025');
-          if (isJC2026) return slot.includes('JC1 2026');
+          if (isJC2025) return slot.includes("JC1 2025");
+          if (isJC2026) return slot.includes("JC1 2026");
           return true;
         });
 
@@ -239,11 +239,14 @@ export default function HomePage() {
 
   // Generate H2 Math schedule inquiry message with selected time slots
   const generateH2MathScheduleMessage = () => {
-    const baseMessage = "Hi! I'm interested in H2 Math tuition but need information about different time slots or availability. Could you help me find a suitable schedule?";
+    const baseMessage =
+      "Hi! I'm interested in H2 Math tuition but need information about different time slots or availability. Could you help me find a suitable schedule?";
 
     if (selectedTimeSlots.length > 0) {
       const selectedSlots = selectedTimeSlots.join(", ");
-      const cohort = selectedTimeSlots[0].includes('JC1 2025') ? 'JC1 2025' : 'JC1 2026';
+      const cohort = selectedTimeSlots[0].includes("JC1 2025")
+        ? "JC1 2025"
+        : "JC1 2026";
       return `${baseMessage} I'm interested in the ${cohort} cohort but the current times (${selectedSlots}) don't work for me. Do you have alternative timings or future batches available?`;
     }
 
@@ -3788,9 +3791,7 @@ export default function HomePage() {
               <div className="note-icon">📞</div>
               <h4>A Maths Tuition Available</h4>
               <p>Additional Mathematics classes for Secondary students</p>
-              <div className="note-cta-text">
-                WhatsApp us to enquire!
-              </div>
+              <div className="note-cta-text">WhatsApp us to enquire!</div>
             </a>
             <a
               href={`https://wa.me/6583493435?text=${encodeURIComponent(generateH2MathScheduleMessage())}`}
@@ -3801,9 +3802,7 @@ export default function HomePage() {
               <div className="note-icon">📅</div>
               <h4>H2 Math Schedule Inquiry</h4>
               <p>Need different timings or future cohort information?</p>
-              <div className="note-cta-text">
-                Ask about other timings
-              </div>
+              <div className="note-cta-text">Ask about other timings</div>
             </a>
           </div>
         </div>
@@ -3904,9 +3903,13 @@ export default function HomePage() {
               <div className="virtual-seat-header">
                 <span className="virtual-seat-icon">💻</span>
                 <h3>Looking for a More Budget-Friendly Option?</h3>
-                <span className="virtual-seat-price">Starting from S$210/month</span>
+                <span className="virtual-seat-price">
+                  Starting from S$210/month
+                </span>
               </div>
-              <div className={`toggle-arrow ${showVirtualSeat ? 'rotated' : ''}`}>
+              <div
+                className={`toggle-arrow ${showVirtualSeat ? "rotated" : ""}`}
+              >
                 ▼
               </div>
             </div>
@@ -3923,16 +3926,18 @@ export default function HomePage() {
                     </div>
                   </div>
                   <ul className="pricing-features">
-                    <li>✓ Live stream access to all classes</li>
+                    <li>✓ 2 hours per week</li>
                     <li>✓ Course materials (digital only)</li>
                     <li>✓ Access to recorded sessions</li>
-                    <li>✓ Basic Q&A via chat (response not guaranteed)</li>
-                    <li>✗ Direct instructor engagement limited</li>
-                    <li>✗ No work review & feedback</li>
-                    <li>✗ No hands-on activities or physical materials</li>
+                    <li>✓ Basic homework support via chat</li>
+                    <li>✓ General Q&A via chat (response not guaranteed)</li>
+                    <li>✗ Instructor prioritizes physical class students</li>
+                    <li>✗ No instant feedback while working on problems</li>
                   </ul>
                   <div className="virtual-seat-note">
-                    <strong>Best For:</strong> Students who want to preview the content or have budget constraints but understand they're getting a significantly reduced experience.
+                    <strong>Best For:</strong> Students who want to preview the
+                    content or have budget constraints but understand they're
+                    getting a significantly reduced experience.
                   </div>
                   <div className="pricing-cta">
                     <a
