@@ -98,6 +98,7 @@ export default function HomePage() {
     "teaching-options": false,
   });
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<string[]>([]);
+  const [showVirtualSeat, setShowVirtualSeat] = useState(false);
 
   // Form state for spam protection
   const [formData, setFormData] = useState({
@@ -1863,6 +1864,123 @@ export default function HomePage() {
             background: #f8f9fa;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Virtual Seat Section */
+        .virtual-seat-section {
+            margin-top: 3rem;
+        }
+
+        .virtual-seat-toggle {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .virtual-seat-toggle:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(245, 200, 66, 0.2);
+        }
+
+        .virtual-seat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .virtual-seat-icon {
+            font-size: 1.5rem;
+        }
+
+        .virtual-seat-toggle h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin: 0;
+            flex: 1;
+        }
+
+        .virtual-seat-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--primary-color);
+        }
+
+        .toggle-arrow {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            transition: transform 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .toggle-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        .virtual-seat-content {
+            margin-top: 1.5rem;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .virtual-seat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(245, 200, 66, 0.2);
+        }
+
+        .virtual-seat-note {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .virtual-seat-toggle {
+                padding: 1rem;
+            }
+
+            .virtual-seat-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .virtual-seat-price {
+                font-size: 1rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .virtual-seat-card {
+                padding: 2rem;
+            }
         }
 
         /* Contact Section */
@@ -3775,6 +3893,60 @@ export default function HomePage() {
                 Ask About Group Discounts
               </a>
             </div>
+          </div>
+
+          {/* Virtual Seat Option - Collapsible */}
+          <div className="virtual-seat-section">
+            <div
+              className="virtual-seat-toggle"
+              onClick={() => setShowVirtualSeat(!showVirtualSeat)}
+            >
+              <div className="virtual-seat-header">
+                <span className="virtual-seat-icon">💻</span>
+                <h3>Looking for a More Budget-Friendly Option?</h3>
+                <span className="virtual-seat-price">Starting from S$210/month</span>
+              </div>
+              <div className={`toggle-arrow ${showVirtualSeat ? 'rotated' : ''}`}>
+                ▼
+              </div>
+            </div>
+
+            {showVirtualSeat && (
+              <div className="virtual-seat-content">
+                <div className="virtual-seat-card">
+                  <div className="pricing-header">
+                    <h3>Virtual Seat</h3>
+                    <div className="price">
+                      <span className="currency">S$</span>
+                      <span className="amount">210</span>
+                      <span className="period">/month</span>
+                    </div>
+                  </div>
+                  <ul className="pricing-features">
+                    <li>✓ Live stream access to all classes</li>
+                    <li>✓ Course materials (digital only)</li>
+                    <li>✓ Access to recorded sessions</li>
+                    <li>✓ Basic Q&A via chat (response not guaranteed)</li>
+                    <li>✗ Direct instructor engagement limited</li>
+                    <li>✗ No work review & feedback</li>
+                    <li>✗ No hands-on activities or physical materials</li>
+                  </ul>
+                  <div className="virtual-seat-note">
+                    <strong>Best For:</strong> Students who want to preview the content or have budget constraints but understand they're getting a significantly reduced experience.
+                  </div>
+                  <div className="pricing-cta">
+                    <a
+                      href={`https://wa.me/6583493435?text=Hi! I'm interested in the Virtual Seat option for S$210/month. Could you tell me more about how it works?`}
+                      className="btn-primary"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Ask About Virtual Seat
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
