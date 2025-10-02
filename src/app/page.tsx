@@ -1626,11 +1626,19 @@ export default function HomePage() {
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
             border: 1px solid rgba(245, 200, 66, 0.1);
             transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .schedule-note-card.clickable-card {
+            cursor: pointer;
         }
 
         .schedule-note-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            text-decoration: none;
         }
 
         .note-icon {
@@ -1651,19 +1659,19 @@ export default function HomePage() {
             font-size: 0.95rem;
         }
 
-        .note-cta-link {
+        .note-cta-text {
             display: inline-block;
             background: var(--primary-color);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 25px;
-            text-decoration: none;
             font-weight: 600;
             font-size: 0.9rem;
+            margin-top: 1rem;
             transition: all 0.3s ease;
         }
 
-        .note-cta-link:hover {
+        .clickable-card:hover .note-cta-text {
             background: #e6b800;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(245, 200, 66, 0.3);
@@ -3653,28 +3661,32 @@ export default function HomePage() {
             </div>
           </div>
           <div className="schedule-notes-grid">
-            <div className="schedule-note-card">
+            <a
+              href="https://wa.me/6583493435?text=Hi!%20I'm%20interested%20in%20A%20Maths%20tuition.%20Could%20you%20please%20tell%20me%20more%20about%20the%20available%20time%20slots%20and%20pricing?"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="schedule-note-card clickable-card"
+            >
               <div className="note-icon">📞</div>
               <h4>A Maths Tuition Available</h4>
               <p>Additional Mathematics classes for Secondary students</p>
-              <a href="https://wa.me/6583493435?text=Hi!%20I'm%20interested%20in%20A%20Maths%20tuition.%20Could%20you%20please%20tell%20me%20more%20about%20the%20available%20time%20slots%20and%20pricing?"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="note-cta-link">
+              <div className="note-cta-text">
                 WhatsApp us to enquire!
-              </a>
-            </div>
-            <div className="schedule-note-card">
+              </div>
+            </a>
+            <a
+              href={`https://wa.me/6583493435?text=${encodeURIComponent(generateH2MathScheduleMessage())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="schedule-note-card clickable-card"
+            >
               <div className="note-icon">📅</div>
               <h4>H2 Math Schedule Inquiry</h4>
               <p>Need different timings or future cohort information?</p>
-              <a href={`https://wa.me/6583493435?text=${encodeURIComponent(generateH2MathScheduleMessage())}`}
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="note-cta-link">
+              <div className="note-cta-text">
                 Ask about other timings
-              </a>
-            </div>
+              </div>
+            </a>
           </div>
         </div>
       </section>
