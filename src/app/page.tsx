@@ -3318,7 +3318,23 @@ export default function HomePage() {
                         allowFullScreen
                       ></iframe>
                     </div>
-                    <p className="video-label">Complex Numbers</p>
+                    <p className="video-label">
+                      Complex Numbers: Food for Thought
+                    </p>
+                  </div>
+                  <div className="video-slide">
+                    <div className="video-wrapper">
+                      <iframe
+                        src="https://www.youtube.com/embed/GGBqWf1RGU0"
+                        title="Sigma Notation"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                    <p className="video-label">
+                      Sigma Notation
+                    </p>
                   </div>
                 </div>
 
