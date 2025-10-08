@@ -280,11 +280,33 @@ export default function HomePage() {
   }, [currentSlideIndex]);
 
   // Video carousel functionality
-  const totalVideos = 3;
+  const teachingVideos = [
+    {
+      id: "bokhYBCU34Q",
+      title: "Integration",
+      label: "Integration: Solids of Revolution",
+    },
+    {
+      id: "lyUwFZkNaZg",
+      title: "Integration",
+      label: "Integration: How can area be negative?",
+    },
+    {
+      id: "aBXwVA6fCfY",
+      title: "Complex Numbers",
+      label: "Complex Numbers: Food for Thought",
+    },
+    {
+      id: "GGBqWf1RGU0",
+      title: "Sigma Notation",
+      label: "Σ notation: Closed Form Expression",
+    },
+  ];
+  const totalVideos = teachingVideos.length;
 
   const getMaxVideoIndex = () => {
     const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
-    return isMobile ? totalVideos - 1 : 1; // Mobile: show 1 video (max index 2), Desktop: show 2 videos (max index 1)
+    return isMobile ? totalVideos - 1 : 1; // Mobile: show 1 video (max index 3), Desktop: show 2 videos (max index 1)
   };
 
   const nextVideo = () => {
@@ -3038,6 +3060,27 @@ export default function HomePage() {
                 <div className="testimonial-slide active">
                   <div className="testimonial-content">
                     <p>
+                      "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
+                    </p>
+                  </div>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">
+                      <img
+                        src="/images/schools/ejc-logo.png"
+                        alt="Eunoia Junior College"
+                        className="school-logo"
+                      />
+                    </div>
+                    <div className="author-info">
+                      <h4>Z</h4>
+                      <p>EJC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="testimonial-slide">
+                  <div className="testimonial-content">
+                    <p>
                       "hi mr wu, wanted to thank you for all the help with math!
                       managed to <strong>get an A for H1 math 😊</strong>{" "}
                       everything else was alright!"
@@ -3054,27 +3097,6 @@ export default function HomePage() {
                     <div className="author-info">
                       <h4>JX</h4>
                       <p>RI</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="testimonial-slide">
-                  <div className="testimonial-content">
-                    <p>
-                      "HI MR WU <strong>I GOT 90RP</strong> THANK U!!!!! HOORAY"
-                    </p>
-                  </div>
-                  <div className="testimonial-author">
-                    <div className="author-avatar">
-                      <img
-                        src="/images/schools/ejc-logo.png"
-                        alt="Eunoia Junior College"
-                        className="school-logo"
-                      />
-                    </div>
-                    <div className="author-info">
-                      <h4>Z</h4>
-                      <p>EJC</p>
                     </div>
                   </div>
                 </div>
@@ -3278,64 +3300,20 @@ export default function HomePage() {
               <h4>Sample Teaching Videos</h4>
               <div className="videos-container">
                 <div className="video-track" id="videoTrack">
-                  <div className="video-slide">
-                    <div className="video-wrapper">
-                      <iframe
-                        src="https://www.youtube.com/embed/bokhYBCU34Q"
-                        title="Integration: Solids of Revolution"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
+                  {teachingVideos.map((video, index) => (
+                    <div key={video.id} className="video-slide">
+                      <div className="video-wrapper">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${video.id}`}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                      <p className="video-label">{video.label}</p>
                     </div>
-                    <p className="video-label">
-                      Integration: Solids of Revolution
-                    </p>
-                  </div>
-
-                  <div className="video-slide">
-                    <div className="video-wrapper">
-                      <iframe
-                        src="https://www.youtube.com/embed/lyUwFZkNaZg"
-                        title="Integration: why is area negative?"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <p className="video-label">
-                      Integration: why is area negative?
-                    </p>
-                  </div>
-
-                  <div className="video-slide">
-                    <div className="video-wrapper">
-                      <iframe
-                        src="https://www.youtube.com/embed/aBXwVA6fCfY"
-                        title="Complex Numbers Teaching"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <p className="video-label">
-                      Complex Numbers: Food for Thought
-                    </p>
-                  </div>
-                  <div className="video-slide">
-                    <div className="video-wrapper">
-                      <iframe
-                        src="https://www.youtube.com/embed/GGBqWf1RGU0"
-                        title="Sigma Notation"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <p className="video-label">
-                      Sigma Notation
-                    </p>
-                  </div>
+                  ))}
                 </div>
 
                 <button className="video-nav-btn video-prev" id="videoPrev">
@@ -3347,12 +3325,13 @@ export default function HomePage() {
               </div>
 
               <div className="video-indicators">
-                <span className="video-indicator active" data-slide="0"></span>
-                <span className="video-indicator" data-slide="1"></span>
-                <span
-                  className="video-indicator mobile-only"
-                  data-slide="2"
-                ></span>
+                {teachingVideos.map((video, index) => (
+                  <span
+                    key={video.id}
+                    className={`video-indicator ${index === 0 ? "active" : ""} ${index >= 2 ? "mobile-only" : ""}`}
+                    data-slide={index}
+                  ></span>
+                ))}
               </div>
             </div>
           </div>
