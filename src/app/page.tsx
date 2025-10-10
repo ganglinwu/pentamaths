@@ -738,12 +738,13 @@ export default function HomePage() {
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
         }
 
         .nav-links {
@@ -2185,6 +2186,10 @@ export default function HomePage() {
                 justify-content: space-between;
             }
 
+            .logo img {
+                height: 32px;
+            }
+
             .cta-button {
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
@@ -2752,6 +2757,10 @@ export default function HomePage() {
                 text-align: center;
             }
 
+            .video-track {
+                gap: 0;
+            }
+
             .video-slide {
                 min-width: 100%;
             }
@@ -2919,7 +2928,9 @@ export default function HomePage() {
       {/* Navigation */}
       <nav>
         <div className="nav-container">
-          <div className="logo">Pentamaths</div>
+          <div className="logo">
+            <img src="/images/logo/pentagon-logo-horizontal.png" alt="Pentagon Learning" />
+          </div>
           <ul className="nav-links">
             <li>
               <a href="#home">Home</a>
