@@ -634,6 +634,14 @@ export default function HomePage() {
           (window as any).gtag_report_conversion();
         }
 
+        // Track Meta Pixel lead conversion
+        if (
+          typeof window !== "undefined" &&
+          (window as any).fbq_track_lead
+        ) {
+          (window as any).fbq_track_lead();
+        }
+
         alert("Thank you for your message! We'll get back to you soon.");
       }
 
