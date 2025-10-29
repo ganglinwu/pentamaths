@@ -1777,8 +1777,10 @@ export default function HomePage() {
         }
 
         .pricing-card.featured {
-            border: 2px solid var(--primary-color);
+            border: 3px solid var(--brand-yellow);
             transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(245, 200, 66, 0.4),
+                        0 0 0 1px var(--brand-yellow);
         }
 
         .pricing-badge {
@@ -1792,6 +1794,38 @@ export default function HomePage() {
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
+        }
+
+        .success-stat {
+            background: var(--brand-dark-blue);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 0 -1rem 1.5rem -1rem;
+            box-shadow: 0 4px 12px rgba(46, 89, 132, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            color: white !important;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        .stat-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+            opacity: 0.95;
+            line-height: 1.3;
+            color: white !important;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: white !important;
         }
 
         .pricing-header {
@@ -2476,6 +2510,8 @@ export default function HomePage() {
             .pricing-card.featured {
                 transform: none;
                 order: -1;
+                box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35),
+                            0 0 0 1px var(--brand-yellow);
             }
 
             .pricing-card {
@@ -2484,6 +2520,19 @@ export default function HomePage() {
 
             .amount {
                 font-size: 2.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stat-text {
+                font-size: 0.9rem;
+            }
+
+            .success-stat {
+                padding: 1rem 1.25rem;
+                margin: 0 -0.5rem 1.25rem -0.5rem;
             }
 
             .group-discount-card {
@@ -3858,6 +3907,10 @@ export default function HomePage() {
                   <span className="amount">570</span>
                   <span className="period">/month</span>
                 </div>
+              </div>
+              <div className="success-stat">
+                <div className="stat-number">90%</div>
+                <div className="stat-text">of A scoring students chose this plan</div>
               </div>
               <ul className="pricing-features">
                 <li>
