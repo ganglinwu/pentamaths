@@ -78,8 +78,8 @@ export default function RootLayout({
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
 
-              // Meta Pixel ID: 933156671448730
-              fbq('init', '933156671448730');
+              // Meta Pixel ID: 2278879292398703
+              fbq('init', '2278879292398703');
               fbq('track', 'PageView');
 
               // Function to track form leads - call this on successful form submission
@@ -92,7 +92,7 @@ export default function RootLayout({
         />
         <noscript>
           <img height="1" width="1" style={{display: 'none'}}
-               src="https://www.facebook.com/tr?id=933156671448730&ev=PageView&noscript=1" />
+               src="https://www.facebook.com/tr?id=2278879292398703&ev=PageView&noscript=1" />
         </noscript>
       </head>
       <body
